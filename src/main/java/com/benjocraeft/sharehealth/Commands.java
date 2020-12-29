@@ -7,14 +7,51 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Commands implements TabExecutor {
 
+    final private String[] mainSchema = {
+            "get", "set", "reset", "log"
+    };
+
+    final private String[] hasSecondSchema = {
+            "log",
+            "get"
+    };
+
+    final private String[][] secondSchema = {
+            {
+                "on", "off"
+            },
+            {
+                "max"
+            }
+    };
+
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return null;
+        List<String> list = new ArrayList<>();
+
+        if (strings.length == 1){
+            StringUtil.copyPartialMatches(strings[0], Arrays.asList(mainSchema), list);
+        }
+        if (strings.length == 2){
+            List<String> hasSecondSchemaList = Arrays.asList(hasSecondSchema);
+              if (hasSecondSchemaList.contains(strings[0])){
+                  int index = hasSecondSchemaList.indexOf(strings[0]);
+                  List<String> checkList = Arrays.asList(secondSchema[index]);
+                  StringUtil.copyPartialMatches(strings[1], checkList, list);
+              }
+        }
+
+
+        return list;
     }
 
     @Override
