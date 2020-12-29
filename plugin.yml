@@ -8,6 +8,5 @@ website: https://mc.benjocraeft.com
 
 commands:
   sharehealth:
-    usage: /<command>
     aliases: [sh]
     description: Commands to control the Sharehealth System added by the Plugin

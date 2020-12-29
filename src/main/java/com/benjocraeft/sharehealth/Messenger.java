@@ -2,17 +2,18 @@ package com.benjocraeft.sharehealth;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.block.Block;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class Messenger {
@@ -36,10 +37,8 @@ public class Messenger {
     }
 
     void sendFailedMessage(Player cause){
-        Bukkit.getOnlinePlayers().forEach(p -> {
-            String message = "Mission failed, go next! CAUSE: " + ChatColor.RED + cause.getDisplayName();
-            p.sendMessage(message);
-        });
+        String message = "Mission failed, go next! CAUSE: " + ChatColor.RED + cause.getDisplayName();
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
     }
 
     void onPlayerGotDamageMessage(Player player, double damage, DamageCause cause){
@@ -61,15 +60,6 @@ public class Messenger {
             return;
         String message = damageMessage(player, damage, damager);
         Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
-    }
-
-    private String damageMessage(Player player, double damage){
-        String playerS = player.getDisplayName();
-        String damageS = String.format("%.2f", damage / 2);
-        return ChatColor.AQUA + playerS
-                + ChatColor.WHITE + " shared "
-                + ChatColor.RED + damageS
-                + ChatColor.WHITE + " hearts damage!";
     }
 
     private String damageMessage(Player player, double damage, DamageCause cause){
@@ -96,15 +86,55 @@ public class Messenger {
         return damageMessage(player, damage) + ChatColor.YELLOW + " Block: " + name;
     }
 
+    private String damageMessage(Player player, double damage){
+        String playerS = player.getDisplayName();
+        String damageS = String.format("%.2f", damage / 2);
+        return ChatColor.BLUE + playerS
+                + ChatColor.WHITE + " shared "
+                + ChatColor.RED + damageS
+                + ChatColor.WHITE + " hearts damage!";
+    }
+
     private String healMessage(Player player, double regainedHealth, RegainReason reason){
         String playerS = player.getDisplayName();
-        String healingS = Double.toString(regainedHealth / 2);
+        String healingS = String.format("%.2f", regainedHealth / 2);
         String causeS = reason.toString();
-        return  ChatColor.AQUA + playerS
+        return ChatColor.BLUE + playerS
                 + ChatColor.WHITE + " shared "
                 + ChatColor.GREEN + healingS
                 + ChatColor.WHITE + " hearts healing!"
                 + ChatColor.YELLOW + " Cause: " + causeS;
+    }
+
+    String statisticsMessage(){
+        StringBuilder stats = new StringBuilder("Statistics:");
+        Sharehealth.Instance.getStatistics().getStatistics().forEach(((uuid, values) -> {
+            Player currentPlayer = Bukkit.getPlayer(uuid);
+            if (currentPlayer != null){
+                String playerName = currentPlayer.getDisplayName();
+                String stat = "\n" + ChatColor.BLUE + playerName +
+                        ChatColor.WHITE + ": Damage caused: " +
+                        ChatColor.RED + String.format("%.2f", values.first / 2) +
+                        ChatColor.WHITE + " || Healing done: " +
+                        ChatColor.GREEN + String.format("%.2f", values.second / 2);
+                stats.append(stat);
+            }
+        }));
+        return stats.toString();
+    }
+
+    String helpMessage(Map<List<String>, Pair<Consumer<CommandSender>, String>> commands){
+        StringBuilder helpMessage = new StringBuilder("Usage:");
+        commands.forEach((nameList, pair) -> {
+            StringBuilder name = new StringBuilder();
+            nameList.forEach(str -> name.append(str).append(" "));
+
+            String description = pair.second;
+            helpMessage.append("\n").
+                    append(ChatColor.AQUA).append(name).
+                    append(ChatColor.WHITE).append("-> ").append(description);
+        });
+        return helpMessage.toString();
     }
 
 }
