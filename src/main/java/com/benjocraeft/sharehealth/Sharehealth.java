@@ -2,6 +2,7 @@ package com.benjocraeft.sharehealth;
 
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
@@ -60,7 +61,10 @@ public class Sharehealth extends JavaPlugin {
 
         //Register Events and Commands
         Bukkit.getPluginManager().registerEvents(new PlayerListeners(), this);
-        Objects.requireNonNull(getCommand("sharehealth")).setExecutor(new Commands());
+        Commands commands = new Commands();
+        PluginCommand pluginCommand = Objects.requireNonNull(getCommand("sharehealth"));
+        pluginCommand.setExecutor(commands);
+        pluginCommand.setTabCompleter(commands);
 
         //Ready to go
         getLogger().info("ShareHealth has been enabled!");

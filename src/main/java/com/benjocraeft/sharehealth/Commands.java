@@ -1,14 +1,21 @@
 package com.benjocraeft.sharehealth;
 
-import org.bukkit.command.CommandExecutor;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-public class Commands implements CommandExecutor {
+import java.util.List;
+
+public class Commands implements TabExecutor {
+
+    @Override
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+        return null;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
@@ -129,5 +136,4 @@ public class Commands implements CommandExecutor {
         String msg = "Unknown command, use help.";
         sender.sendMessage(msg);
     }
-
 }

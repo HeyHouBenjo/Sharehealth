@@ -10,4 +10,4 @@ commands:
   sharehealth:
     usage: /<command>
     aliases: [sh]
-    description: Defined by ShareHealth plugin
+    description: Commands to control the Sharehealth System added by the Plugin
