@@ -1,7 +1,7 @@
 package com.benjocraeft.sharehealth;
 
 import org.bukkit.command.CommandExecutor;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
