@@ -1,6 +1,5 @@
 # User-specific stuff
 .idea/
-!.idea/libraries/spigot.xml
 
 *.iml
 *.ipr
@@ -112,3 +111,5 @@ buildNumber.properties
 
 # Common working directory
 run/
+
+!.idea/libraries/spigot.xml
