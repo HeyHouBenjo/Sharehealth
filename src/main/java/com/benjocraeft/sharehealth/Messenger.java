@@ -5,11 +5,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_16_R1.projectiles.CraftBlockProjectileSource;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -63,7 +65,18 @@ public class Messenger {
     private String damageMessage(Player player, double damage, Entity damager){
         String name = damager.getName();
         if (damager instanceof Projectile){
-            name = Objects.requireNonNull(((Projectile) damager).getShooter()).toString();
+            Projectile projectile = (Projectile) damager;
+            ProjectileSource source = projectile.getShooter();
+            if (source != null){
+                if (source instanceof Entity){
+                    Entity shooterEntity = (Entity) source;
+                    name = shooterEntity.getName();
+                }
+                if (source instanceof CraftBlockProjectileSource){
+                    CraftBlockProjectileSource shooterBlock = (CraftBlockProjectileSource) source;
+                    name = shooterBlock.getBlock().getType().name();
+                }
+            }
         }
         return damageMessage(player, damage) + ChatColor.YELLOW + " Attacker: " + name;
     }
