@@ -10,23 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class Commands implements TabExecutor {
-
-    final private String[] mainSchema = {
-            "get", "reset", "log", "stats", "help"
-    };
-
-    final private String[] hasSecondSchema = {
-            "log"
-    };
-
-    final private String[][] secondSchema = {
-            {
-                "on", "off"
-            }
-    };
 
     final private Map<List<String>, Pair<Consumer<CommandSender>, String>> commands = new HashMap<>();
     {
@@ -40,11 +27,15 @@ public class Commands implements TabExecutor {
         );
         commands.put(
                 Arrays.asList("log", "on"),
-                Pair.pair(sender -> this.commandSetLogging(sender, true), "Activates permanent player Logging about Damage and Healing.")
+                Pair.pair(sender -> this.commandSetLogging(sender, true), "Enables Logging.")
         );
         commands.put(
                 Arrays.asList("log", "off"),
-                Pair.pair(sender -> this.commandSetLogging(sender, false), "Deactivates permanent player Logging about Damage and Healing.")
+                Pair.pair(sender -> this.commandSetLogging(sender, false), "Disables Logging.")
+        );
+        commands.put(
+                Arrays.asList("log", "get"),
+                Pair.pair(this::commandGetLogging, "Displays if Logging is enabled.")
         );
         commands.put(
                 Arrays.asList("stats"),
@@ -56,18 +47,42 @@ public class Commands implements TabExecutor {
         );
     }
 
+    final private List<String> mainSchema;
+    final private List<String> hasSecondSchema;
+    final private List<List<String>> secondSchema;
+    {
+        Map<String, List<String>> mapping = new HashMap<>();
+        commands.keySet().forEach(parts -> {
+            String part1 = parts.get(0);
+            String part2 = "";
+            if (parts.size() == 2){
+                part2 = parts.get(1);
+            }
+            mapping.putIfAbsent(part1, new ArrayList<>());
+            if (!part2.isEmpty())
+                mapping.get(part1).add(part2);
+        });
+        mainSchema = new ArrayList<>(mapping.keySet());
+
+        hasSecondSchema = new ArrayList<>(mapping.keySet());
+        hasSecondSchema.removeIf(s -> mapping.get(s).size() == 0);
+
+        secondSchema = new ArrayList<>(mapping.values());
+    }
+
+
+
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         List<String> list = new ArrayList<>();
 
         if (strings.length == 1){
-            StringUtil.copyPartialMatches(strings[0], Arrays.asList(mainSchema), list);
+            StringUtil.copyPartialMatches(strings[0], mainSchema, list);
         }
         if (strings.length == 2){
-            List<String> hasSecondSchemaList = Arrays.asList(hasSecondSchema);
-              if (hasSecondSchemaList.contains(strings[0])){
-                  int index = hasSecondSchemaList.indexOf(strings[0]);
-                  List<String> checkList = Arrays.asList(secondSchema[index]);
+              if (hasSecondSchema.contains(strings[0])){
+                  int index = mainSchema.indexOf(strings[0]);
+                  List<String> checkList = secondSchema.get(index);
                   StringUtil.copyPartialMatches(strings[1], checkList, list);
               }
         }
@@ -103,6 +118,14 @@ public class Commands implements TabExecutor {
             Sharehealth.Instance.onLoggingUpdated(player, hasLogging);
             player.sendMessage("Logging settings updated.");
         }
+    }
+
+    private void commandGetLogging(CommandSender sender){
+        if (sender instanceof Player){
+            String message = "Logging enabled: " + Sharehealth.Instance.getLogging((Player) sender);
+            sender.sendMessage(message);
+        }
+
     }
 
     private void commandSendStats(CommandSender sender){
