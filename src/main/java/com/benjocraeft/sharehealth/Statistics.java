@@ -21,14 +21,25 @@ public class Statistics {
         return Rounded(value, 2);
     }
 
-    public Statistics(Map<UUID, Pair<Double, Double>> statistics){
-        getStatistics().putAll(statistics);
+    public Statistics(Map<UUID, Pair<Double, Double>> statistics, Map<UUID, Boolean> settings){
+        this.statistics.putAll(statistics);
+        this.settings.putAll(settings);
+    }
+
+    final private Map<UUID, Boolean> settings = new HashMap<>();
+    public Map<UUID, Boolean> getSettings(){
+        return settings;
+    }
+    public void setSettings(UUID uuid, boolean hasLogging){
+        settings.put(uuid, hasLogging);
     }
 
     public void onPlayerJoined(Player player){
         UUID uuid = player.getUniqueId();
         Pair<Double, Double> empty = Pair.pair(0., 0.);
         statistics.putIfAbsent(uuid, empty);
+
+        settings.putIfAbsent(uuid, true);
     }
 
     void onPlayerRegainedHealth(Player player, double amount){

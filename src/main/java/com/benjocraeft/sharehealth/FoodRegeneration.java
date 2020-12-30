@@ -6,13 +6,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Objects;
 
-public class HealthRegenTask extends BukkitRunnable {
+public class FoodRegeneration extends BukkitRunnable {
 
-    final private HealthManager healthManager;
-
-
-    HealthRegenTask(HealthManager healthManager){
-        this.healthManager = healthManager;
+    FoodRegeneration(){
         runTaskTimer(Sharehealth.Instance, 80, 80);
     }
 
@@ -30,9 +26,8 @@ public class HealthRegenTask extends BukkitRunnable {
         //According to MinecraftWiki, players automatically regen if their food level
         // is greater than or equal to 18 of 20 (90%)
         //Here, we look for the average food level
-        if (allFoodPoints / allPlayersCount >= 18 && this.healthManager.getHealth() != 0){
-            this.healthManager.addHealth(1);
-            this.healthManager.setHealthByPlayer(null);
+        if (allFoodPoints / allPlayersCount >= 18 && Sharehealth.Instance.getHealthManager().getHealth() != 0){
+            Sharehealth.Instance.onFoodRegeneration();
         }
 
     }

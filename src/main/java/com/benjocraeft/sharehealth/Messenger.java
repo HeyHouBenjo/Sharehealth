@@ -2,6 +2,7 @@ package com.benjocraeft.sharehealth;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -10,18 +11,11 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class Messenger {
-
-    private boolean logging = true;
-    void setLogging(boolean logging){
-        this.logging = logging;
-    }
 
     private Logger logger;
 
@@ -29,11 +23,17 @@ public class Messenger {
         this.logger = logger;
     }
 
+    private List<Player> playersToSendLogs(){
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        players.removeIf(p -> !Sharehealth.Instance.getLogging(p));
+        return players;
+    }
+
     void onPlayerRegainedHealth(Player player, double amount, RegainReason reason){
-        if (!logging || amount <= 0)
+        if (amount <= 0)
             return;
         String message = healMessage(player, amount, reason);
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
+        playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
     void sendFailedMessage(Player cause){
@@ -42,24 +42,18 @@ public class Messenger {
     }
 
     void onPlayerGotDamageMessage(Player player, double damage, DamageCause cause){
-        if (!logging)
-            return;
         String message = damageMessage(player, damage, cause);
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
+        playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
     void onPlayerGotDamageMessage(Player player, double damage, Entity damager){
-        if (!logging)
-            return;
         String message = damageMessage(player, damage, damager);
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
+        playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
     void onPlayerGotDamageMessage(Player player, double damage, Block damager){
-        if (!logging)
-            return;
         String message = damageMessage(player, damage, damager);
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
+        playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
     private String damageMessage(Player player, double damage, DamageCause cause){
@@ -109,16 +103,13 @@ public class Messenger {
     String statisticsMessage(){
         StringBuilder stats = new StringBuilder("Statistics:");
         Sharehealth.Instance.getStatistics().getStatistics().forEach(((uuid, values) -> {
-            Player currentPlayer = Bukkit.getPlayer(uuid);
-            if (currentPlayer != null){
-                String playerName = currentPlayer.getDisplayName();
-                String stat = "\n" + ChatColor.BLUE + playerName +
-                        ChatColor.WHITE + ": Damage caused: " +
-                        ChatColor.RED + String.format("%.2f", values.first / 2) +
-                        ChatColor.WHITE + " || Healing done: " +
-                        ChatColor.GREEN + String.format("%.2f", values.second / 2);
-                stats.append(stat);
-            }
+            String playerName = Bukkit.getOfflinePlayer(uuid).getName();
+            String stat = "\n" + ChatColor.BLUE + playerName +
+                    ChatColor.WHITE + ": Damage caused: " +
+                    ChatColor.RED + String.format("%.2f", values.first / 2) +
+                    ChatColor.WHITE + " || Healing done: " +
+                    ChatColor.GREEN + String.format("%.2f", values.second / 2);
+            stats.append(stat);
         }));
         return stats.toString();
     }

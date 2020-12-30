@@ -52,12 +52,12 @@ public class Sharehealth extends JavaPlugin {
         messenger = new Messenger(getLogger());
 
         //Create statistics from file
-        statistics = new Statistics(fileManager.loadStatistics());
+        statistics = new Statistics(fileManager.loadStatistics(), fileManager.loadSettings());
 
         loadStatus();
 
         //Starts custom health regeneration
-        new HealthRegenTask(healthManager);
+        new FoodRegeneration();
 
         //Register Events and Commands
         Bukkit.getPluginManager().registerEvents(new PlayerListeners(), this);
@@ -133,6 +133,13 @@ public class Sharehealth extends JavaPlugin {
         return true;
     }
 
+    void onFoodRegeneration(){
+        healthManager.addHealth(1);
+        healthManager.setHealthByPlayer(null);
+
+        saveStatus();
+    }
+
     void onAbsorptionPrevented(int level){
         getLogger().info("Add " + level * 2 + "hearts!");
     }
@@ -183,6 +190,16 @@ public class Sharehealth extends JavaPlugin {
 
         healthManager.setHealth((Double)map.get("health"));
         isFailed = (boolean) map.get("isFailed");
+    }
+
+    void onLoggingUpdated(Player player, boolean hasLogging){
+        statistics.setSettings(player.getUniqueId(), hasLogging);
+        Map<UUID, Boolean> settings = statistics.getSettings();
+        fileManager.saveSettings(settings);
+    }
+
+    boolean getLogging(Player player){
+        return statistics.getSettings().get(player.getUniqueId());
     }
 
 }

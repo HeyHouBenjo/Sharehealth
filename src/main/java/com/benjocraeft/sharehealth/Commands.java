@@ -96,9 +96,13 @@ public class Commands implements TabExecutor {
         sender.sendMessage(message);
     }
 
-    private void commandSetLogging(CommandSender sender, boolean log){
-        Sharehealth.Instance.getMessenger().setLogging(log);
-        //TODO Set by user
+    private void commandSetLogging(CommandSender sender, boolean hasLogging){
+        if (sender instanceof Player){
+            Player player = (Player) sender;
+
+            Sharehealth.Instance.onLoggingUpdated(player, hasLogging);
+            player.sendMessage("Logging settings updated.");
+        }
     }
 
     private void commandSendStats(CommandSender sender){

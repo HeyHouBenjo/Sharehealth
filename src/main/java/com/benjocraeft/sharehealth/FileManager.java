@@ -37,13 +37,22 @@ public class FileManager {
         }
     }
 
-    public Map<String, String> loadSettings(){
-        return loadFromFile(settingsFile);
+    public Map<UUID, Boolean> loadSettings(){
+        Map<UUID, Boolean> settingsMap = new HashMap<>();
+
+        Map<String, String> map = loadFromFile(settingsFile);
+        map.forEach((String uuidString, String hasLoggingString) -> {
+            UUID uuid = UUID.fromString(uuidString);
+            Boolean hasLogging = Boolean.parseBoolean(hasLoggingString);
+            settingsMap.put(uuid, hasLogging);
+        });
+
+        return settingsMap;
     }
     public Map<UUID, Pair<Double, Double>> loadStatistics(){
-        Map<String, String> map = loadFromFile(statisticsFile);
-
         Map<UUID, Pair<Double, Double>> statisticsMap = new HashMap<>();
+
+        Map<String, String> map = loadFromFile(statisticsFile);
         map.forEach((String s1, String s2) -> {
             UUID uuid = UUID.fromString(s1);
 
@@ -58,9 +67,9 @@ public class FileManager {
         return statisticsMap;
     }
     public Map<String, Object> loadStatus(){
-        Map<String, String> map = loadFromFile(statusFile);
         Map<String, Object> statusMap = new HashMap<>();
 
+        Map<String, String> map = loadFromFile(statusFile);
         map.putIfAbsent("health", "20");
         map.putIfAbsent("isFailed", "false");
 
@@ -83,6 +92,14 @@ public class FileManager {
 
     public void saveStatus(Map<String, Object> statusMap){
         saveToFile(statusFile, statusMap);
+    }
+
+    public void saveSettings(Map<UUID, Boolean> settingsMap){
+        Map<String, Object> map = new HashMap<>();
+
+        settingsMap.forEach((UUID uuid, Boolean hasLogging) -> map.put(uuid.toString(), hasLogging));
+
+        saveToFile(settingsFile, map);
     }
 
     private Map<String, String> loadFromFile(File file) {
