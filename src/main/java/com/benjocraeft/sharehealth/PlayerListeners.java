@@ -51,8 +51,8 @@ public class PlayerListeners implements Listener{
                     break;
                 }
             }
-            double originalAbsorptionDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
-            Sharehealth.Instance.onPlayerGotDamage((Player) entity, damage, cause, allowed, originalAbsorptionDamage);
+            double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
+            Sharehealth.Instance.onPlayerGotDamage((Player) entity, damage, cause, allowed, absorbedDamage);
         }
     }
 
@@ -63,7 +63,8 @@ public class PlayerListeners implements Listener{
         Entity cause = event.getDamager();
 
         if (entity instanceof Player) {
-            Sharehealth.Instance.onPlayerGotDamageByEntity((Player)entity, damage, cause);
+            double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
+            Sharehealth.Instance.onPlayerGotDamageByEntity((Player)entity, damage, cause, absorbedDamage);
         }
     }
 
@@ -74,7 +75,8 @@ public class PlayerListeners implements Listener{
         Block cause = event.getDamager();
 
         if (entity instanceof Player) {
-            Sharehealth.Instance.onPlayerGotDamageByBlock((Player)entity, damage, cause);
+            double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
+            Sharehealth.Instance.onPlayerGotDamageByBlock((Player)entity, damage, cause, absorbedDamage);
         }
     }
 

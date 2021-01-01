@@ -99,33 +99,33 @@ public class Sharehealth extends JavaPlugin {
         healthManager.updatePlayer(player);
     }
     
-    void onPlayerGotDamage(Player player, double damage, DamageCause cause, boolean allowed, double absorptionDamage){
+    void onPlayerGotDamage(Player player, double damage, DamageCause cause, boolean allowed, double absorbedDamage){
         if (isFailed)
             return;
 
-        double receivedDamage = damage + absorptionDamage;
+        double receivedDamage = damage + absorbedDamage;
 
         if (allowed)
             messenger.onPlayerGotDamageMessage(player, receivedDamage, cause);
 
         statistics.onPlayerGotDamage(player, receivedDamage);
-        if (!healthManager.onPlayerGotDamage(player, damage, absorptionDamage)){
+        if (!healthManager.onPlayerGotDamage(player, damage, absorbedDamage)){
             failed(player);
         }
 
         saveStatus();
     }
-    void onPlayerGotDamageByEntity(Player player, double damage, Entity cause){
+    void onPlayerGotDamageByEntity(Player player, double damage, Entity cause, double absorbedDamage){
         if (isFailed)
             return;
 
-        messenger.onPlayerGotDamageMessage(player, damage, cause);
+        messenger.onPlayerGotDamageMessage(player, damage + absorbedDamage, cause);
     }
-    void onPlayerGotDamageByBlock(Player player, double damage, Block cause){
+    void onPlayerGotDamageByBlock(Player player, double damage, Block cause, double absorbedDamage){
         if (isFailed)
             return;
 
-        messenger.onPlayerGotDamageMessage(player, damage, cause);
+        messenger.onPlayerGotDamageMessage(player, damage + absorbedDamage, cause);
     }
 
     boolean onPlayerRegainedHealth(Player player, double amount, RegainReason reason){
