@@ -9,7 +9,8 @@ import java.util.Locale;
 
 public class HealthManager {
 
-    private double health = 20;
+    private double
+            health = 20;
 
     double getHealth(){
         return health;
@@ -32,8 +33,10 @@ public class HealthManager {
 
     }
     public void updatePlayer(Player player){
-        if (player.getGameMode().equals(GameMode.SURVIVAL))
+        if (player.getGameMode().equals(GameMode.SURVIVAL)) {
             player.setHealth(health);
+            absorption.setAbsorption(player);
+        }
         if (player.getGameMode().equals(GameMode.SPECTATOR))
             player.setHealth(20);
     }
@@ -51,9 +54,10 @@ public class HealthManager {
         Bukkit.getOnlinePlayers().forEach(p -> p.setHealth(health));
     }
 
-    boolean onPlayerGotDamage(Player player, double damage){
+    boolean onPlayerGotDamage(Player player, double damage, double absorptionDamage){
         subtractHealth(damage);
         setHealthByPlayer(player);
+        absorption.onPlayerGotDamage(player, absorptionDamage);
 
         return health > 0;
     }
@@ -70,5 +74,14 @@ public class HealthManager {
             p.setHealth(health);
         }
     }
+
+    final Absorption absorption = new Absorption();
+
+    void onAbsorptionConsumed(int duration, int amplifier){
+        double amount = (amplifier + 1) * 4;
+        absorption.create(duration, amount);
+    }
+
+
 
 }

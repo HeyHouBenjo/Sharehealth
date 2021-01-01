@@ -4,9 +4,12 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
+import org.bukkit.event.entity.EntityPotionEffectEvent.Cause;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -30,6 +33,7 @@ public class PlayerListeners implements Listener{
     public void onEntityGotDamage(final EntityDamageEvent event){
         Entity entity = event.getEntity();
         double damage = event.getFinalDamage();
+
         DamageCause cause = event.getCause();
 
         DamageCause[] notAllowed = new DamageCause[]{
@@ -47,7 +51,8 @@ public class PlayerListeners implements Listener{
                     break;
                 }
             }
-            Sharehealth.Instance.onPlayerGotDamage((Player) entity, damage, cause, allowed);
+            double originalAbsorptionDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
+            Sharehealth.Instance.onPlayerGotDamage((Player) entity, damage, cause, allowed, originalAbsorptionDamage);
         }
     }
 
@@ -95,8 +100,9 @@ public class PlayerListeners implements Listener{
             if (newEffect != null){
                 if (newEffect.getType().equals(PotionEffectType.ABSORPTION)){
                     event.setCancelled(true);
-                    int level = newEffect.getAmplifier();
-                    Sharehealth.Instance.onAbsorptionPrevented(level);
+                    int amplifier = newEffect.getAmplifier();
+                    int duration = newEffect.getDuration();
+                    Sharehealth.Instance.onAbsorptionConsumed(duration, amplifier);
                 }
             }
         }

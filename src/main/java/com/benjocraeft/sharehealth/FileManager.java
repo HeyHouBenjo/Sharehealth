@@ -31,6 +31,7 @@ public class FileManager {
             }
             if (statusFile.createNewFile()){
                 //TODO Log
+
             }
         } catch(IOException e){
             e.printStackTrace();
@@ -70,11 +71,15 @@ public class FileManager {
         Map<String, Object> statusMap = new HashMap<>();
 
         Map<String, String> map = loadFromFile(statusFile);
-        map.putIfAbsent("health", "20");
-        map.putIfAbsent("isFailed", "false");
 
-        statusMap.put("health", Double.parseDouble(map.get("health")));
-        statusMap.put("isFailed", Boolean.parseBoolean(map.get("isFailed")));
+        map.forEach((String key, String value) -> {
+            if (value.matches("-?\\d+"))
+                statusMap.put(key, Integer.parseInt(value));
+            else if (value.matches("-?\\d+(\\.\\d+)?([df])?"))
+                statusMap.put(key, Double.parseDouble(value));
+            else if (value.matches("(true)|(false)"))
+                statusMap.put(key, Boolean.parseBoolean(value));
+        });
 
         return statusMap;
     }

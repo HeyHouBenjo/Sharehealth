@@ -36,6 +36,14 @@ public class Sharehealth extends JavaPlugin {
 
     boolean isFailed = false;
 
+    private Map<String, Object> defaultStatus = new HashMap<>();
+    {
+        defaultStatus.put("health", 20.);
+        defaultStatus.put("isFailed", false);
+        defaultStatus.put("absorptionAmount", 0.);
+        defaultStatus.put("absorptionDuration", 0);
+    }
+
     @Override
     public void onEnable(){
 
@@ -72,6 +80,8 @@ public class Sharehealth extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        saveStatus();
+
         getLogger().info("ShareHealth has been disabled!");
     }
 
@@ -89,15 +99,17 @@ public class Sharehealth extends JavaPlugin {
         healthManager.updatePlayer(player);
     }
     
-    void onPlayerGotDamage(Player player, double damage, DamageCause cause, boolean allowed){
+    void onPlayerGotDamage(Player player, double damage, DamageCause cause, boolean allowed, double absorptionDamage){
         if (isFailed)
             return;
 
-        if (allowed)
-            messenger.onPlayerGotDamageMessage(player, damage, cause);
+        double receivedDamage = damage + absorptionDamage;
 
-        statistics.onPlayerGotDamage(player, damage);
-        if (!healthManager.onPlayerGotDamage(player, damage)){
+        if (allowed)
+            messenger.onPlayerGotDamageMessage(player, receivedDamage, cause);
+
+        statistics.onPlayerGotDamage(player, receivedDamage);
+        if (!healthManager.onPlayerGotDamage(player, damage, absorptionDamage)){
             failed(player);
         }
 
@@ -140,8 +152,10 @@ public class Sharehealth extends JavaPlugin {
         saveStatus();
     }
 
-    void onAbsorptionPrevented(int level){
-        getLogger().info("Add " + level * 2 + "hearts!");
+    void onAbsorptionConsumed(int duration, int amplifier){
+        healthManager.onAbsorptionConsumed(duration, amplifier);
+
+        saveStatus();
     }
 
     private void failed(Player cause){
@@ -181,6 +195,8 @@ public class Sharehealth extends JavaPlugin {
 
         map.put("health", healthManager.getHealth());
         map.put("isFailed", isFailed);
+        map.put("absorptionAmount", healthManager.absorption.amount);
+        map.put("absorptionDuration", healthManager.absorption.duration);
 
         fileManager.saveStatus(map);
     }
@@ -188,8 +204,14 @@ public class Sharehealth extends JavaPlugin {
     private void loadStatus(){
         Map<String, Object> map = fileManager.loadStatus();
 
+        defaultStatus.forEach(map::putIfAbsent);
+
         healthManager.setHealth((Double)map.get("health"));
         isFailed = (boolean) map.get("isFailed");
+        healthManager.absorption.create(
+                (int)map.get("absorptionDuration"),
+                (Double)map.get("absorptionAmount")
+        );
     }
 
     void onLoggingUpdated(Player player, boolean hasLogging){

@@ -26,7 +26,8 @@ public class FoodRegeneration extends BukkitRunnable {
         //According to MinecraftWiki, players automatically regen if their food level
         // is greater than or equal to 18 of 20 (90%)
         //Here, we look for the average food level
-        if (allFoodPoints / allPlayersCount >= 18 && Sharehealth.Instance.getHealthManager().getHealth() != 0){
+        double currentHealth = Sharehealth.Instance.getHealthManager().getHealth();
+        if (allFoodPoints / allPlayersCount >= 18 && currentHealth > 0 && currentHealth < 20){
             Sharehealth.Instance.onFoodRegeneration();
         }
 

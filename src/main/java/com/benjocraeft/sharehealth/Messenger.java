@@ -74,7 +74,7 @@ public class Messenger {
                 }
                 if (source instanceof CraftBlockProjectileSource){
                     CraftBlockProjectileSource shooterBlock = (CraftBlockProjectileSource) source;
-                    name = shooterBlock.getBlock().getType().name();
+                    return damageMessage(player, damage, shooterBlock.getBlock());
                 }
             }
         }
