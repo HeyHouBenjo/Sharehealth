@@ -114,8 +114,12 @@ public class Messenger {
     }
 
     String statisticsMessage(){
+        Map<UUID, Pair<Double, Double>> statistics = Sharehealth.Instance.getStatistics().getStatistics();
+        if (statistics.size() == 0)
+            return "There are no statistics yet.";
+
         StringBuilder stats = new StringBuilder("Statistics:");
-        Sharehealth.Instance.getStatistics().getStatistics().forEach(((uuid, values) -> {
+        statistics.forEach(((uuid, values) -> {
             String playerName = Bukkit.getOfflinePlayer(uuid).getName();
             String stat = "\n" + ChatColor.BLUE + playerName +
                     ChatColor.WHITE + ": Damage caused: " +

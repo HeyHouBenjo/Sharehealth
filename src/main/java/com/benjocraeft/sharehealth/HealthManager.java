@@ -25,7 +25,7 @@ public class HealthManager {
     }
 
     String getHealthString(){
-        return new Formatter(Locale.US).format("%.2f", health).toString();
+        return new Formatter(Locale.US).format("%.2f", health / 2).toString();
     }
 
 

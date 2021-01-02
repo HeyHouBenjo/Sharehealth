@@ -38,8 +38,8 @@ public class Statistics {
         UUID uuid = player.getUniqueId();
         Pair<Double, Double> empty = Pair.pair(0., 0.);
         statistics.putIfAbsent(uuid, empty);
-
         settings.putIfAbsent(uuid, true);
+
     }
 
     void onPlayerRegainedHealth(Player player, double amount){

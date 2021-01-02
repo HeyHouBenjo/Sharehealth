@@ -2,6 +2,7 @@ package com.benjocraeft.sharehealth;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class FileManager {
 
@@ -22,17 +23,15 @@ public class FileManager {
         settingsFile = new File(pluginPath + "/settings.txt");
         statisticsFile = new File(pluginPath + "/statistics.txt");
         statusFile = new File(pluginPath + "/status.txt");
-        try {
-            if (settingsFile.createNewFile()){
-                //TODO Log
-            }
-            if (statisticsFile.createNewFile()){
-                //TODO Log
-            }
-            if (statusFile.createNewFile()){
-                //TODO Log
 
-            }
+        Logger logger = Sharehealth.Instance.getLogger();
+        try {
+            if (settingsFile.createNewFile())
+                logger.info(settingsFile.getName() + " created");
+            if (statisticsFile.createNewFile())
+                logger.info(statisticsFile.getName() + " created");
+            if (statusFile.createNewFile())
+                logger.info(statusFile.getName() + " created");
         } catch(IOException e){
             e.printStackTrace();
         }

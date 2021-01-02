@@ -61,8 +61,11 @@ public class Sharehealth extends JavaPlugin {
 
         //Create statistics from file
         statistics = new Statistics(fileManager.loadStatistics(), fileManager.loadSettings());
+        getLogger().info("Statistics and Settings loaded");
 
         loadStatus();
+        getLogger().info("Status loaded");
+
 
         //Starts custom health regeneration
         new FoodRegeneration();
@@ -91,6 +94,7 @@ public class Sharehealth extends JavaPlugin {
         healthManager.updatePlayer(player);
         statistics.onPlayerJoined(player);
         fileManager.saveStatistics(statistics.getStatistics());
+        fileManager.saveSettings(statistics.getSettings());
     }
 
     void onPlayerRespawn(Player player){
@@ -205,6 +209,9 @@ public class Sharehealth extends JavaPlugin {
         Map<String, Object> map = fileManager.loadStatus();
 
         defaultStatus.forEach(map::putIfAbsent);
+        map.forEach((String key, Object value) -> {
+            getLogger().info(key + "=" + value);
+        });
 
         healthManager.setHealth((Double)map.get("health"));
         isFailed = (boolean) map.get("isFailed");
@@ -221,7 +228,8 @@ public class Sharehealth extends JavaPlugin {
     }
 
     boolean getLogging(Player player){
-        return statistics.getSettings().get(player.getUniqueId());
+        Map<UUID, Boolean> settings = statistics.getSettings();
+        return settings.get(player.getUniqueId());
     }
 
 }
