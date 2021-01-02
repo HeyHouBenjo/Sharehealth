@@ -27,7 +27,7 @@ public class FoodRegeneration extends BukkitRunnable {
         // is greater than or equal to 18 of 20 (90%)
         //Here, we look for the average food level
         double currentHealth = Sharehealth.Instance.getHealthManager().getHealth();
-        if (allFoodPoints / allPlayersCount >= 18 && currentHealth > 0 && currentHealth < 20){
+        if (allFoodPoints / allPlayersCount >= 16 && currentHealth > 0 && currentHealth < 20){
             Sharehealth.Instance.onFoodRegeneration();
         }
 
