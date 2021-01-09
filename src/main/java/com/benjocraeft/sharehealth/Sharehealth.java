@@ -84,6 +84,7 @@ public class Sharehealth extends JavaPlugin {
     @Override
     public void onDisable() {
         saveStatus();
+        fileManager.saveStatistics(statistics.getStatistics());
 
         getLogger().info("ShareHealth has been disabled!");
     }
@@ -174,6 +175,9 @@ public class Sharehealth extends JavaPlugin {
 
     void reset(){
         isFailed = false;
+        fileManager.backupStats(statistics.getStatistics());
+        statistics.reset();
+        fileManager.saveStatistics(statistics.getStatistics());
         healthManager.reset();
         Bukkit.getOnlinePlayers().forEach(p -> p.setGameMode(GameMode.SURVIVAL));
 

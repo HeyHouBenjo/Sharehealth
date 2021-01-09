@@ -1,5 +1,6 @@
 package com.benjocraeft.sharehealth;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -35,11 +36,7 @@ public class Statistics {
     }
 
     public void onPlayerJoined(Player player){
-        UUID uuid = player.getUniqueId();
-        Pair<Double, Double> empty = Pair.pair(0., 0.);
-        statistics.putIfAbsent(uuid, empty);
-        settings.putIfAbsent(uuid, true);
-
+        putIfAbsent(player);
     }
 
     void onPlayerRegainedHealth(Player player, double amount){
@@ -52,6 +49,18 @@ public class Statistics {
         UUID uuid = player.getUniqueId();
         Pair<Double, Double> oldPair = statistics.get(uuid);
         statistics.put(uuid, Pair.pair(oldPair.first + amount, oldPair.second));
+    }
+
+    private void putIfAbsent(Player player){
+        UUID uuid = player.getUniqueId();
+        Pair<Double, Double> empty = Pair.pair(0., 0.);
+        statistics.putIfAbsent(uuid, empty);
+        settings.putIfAbsent(uuid, true);
+    }
+
+    void reset(){
+        statistics.clear();
+        Bukkit.getOnlinePlayers().forEach(this::putIfAbsent);
     }
 
 }

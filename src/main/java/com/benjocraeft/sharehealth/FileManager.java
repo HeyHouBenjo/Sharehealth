@@ -10,21 +10,22 @@ public class FileManager {
     final private File statisticsFile;
     final private File statusFile;
 
+    final private File pluginFolder = new File(System.getProperty("user.dir"), "plugins/sharehealth");
+    final private String pluginPath = pluginFolder.getPath();
 
     public FileManager(){
-        File pluginFolder = new File(System.getProperty("user.dir"), "plugins/sharehealth");
-        String pluginPath = pluginFolder.getPath();
+        Logger logger = Sharehealth.Instance.getLogger();
 
         //Prepare storage folder
         if (pluginFolder.mkdirs()){
-            //TODO Log
+            logger.info(pluginFolder.getName() + " created");
         }
 
         settingsFile = new File(pluginPath + "/settings.txt");
         statisticsFile = new File(pluginPath + "/statistics.txt");
         statusFile = new File(pluginPath + "/status.txt");
 
-        Logger logger = Sharehealth.Instance.getLogger();
+
         try {
             if (settingsFile.createNewFile())
                 logger.info(settingsFile.getName() + " created");
@@ -84,6 +85,10 @@ public class FileManager {
     }
 
     public void saveStatistics(Map<UUID, Pair<Double, Double>> statistics){
+        saveStatistics(statisticsFile, statistics);
+    }
+
+    private void saveStatistics(File file, Map<UUID, Pair<Double, Double>> statistics){
         Map<String, Object> map = new HashMap<>();
 
         statistics.forEach((UUID uuid, Pair<Double, Double> pair) -> {
@@ -91,7 +96,7 @@ public class FileManager {
             map.put(uuidString, Statistics.Rounded(pair.first) + "," + Statistics.Rounded(pair.second));
         });
 
-        saveToFile(statisticsFile, map);
+        saveToFile(file, map);
     }
 
     public void saveStatus(Map<String, Object> statusMap){
@@ -104,6 +109,20 @@ public class FileManager {
         settingsMap.forEach((UUID uuid, Boolean hasLogging) -> map.put(uuid.toString(), hasLogging));
 
         saveToFile(settingsFile, map);
+    }
+
+    public void backupStats(Map<UUID, Pair<Double, Double>> statistics){
+        Date date = new Date();
+        String dateString = String.valueOf(date.getTime());
+        File backupFile = new File(pluginPath + "/statistics_" + dateString + ".txt");
+        try {
+            if (backupFile.createNewFile()){
+                Sharehealth.Instance.getLogger().info(backupFile.getName() + " created");
+                saveStatistics(backupFile, statistics);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Map<String, String> loadFromFile(File file) {
