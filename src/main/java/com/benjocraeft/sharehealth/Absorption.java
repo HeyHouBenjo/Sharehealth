@@ -1,13 +1,9 @@
 package com.benjocraeft.sharehealth;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Absorption {
@@ -17,8 +13,7 @@ public class Absorption {
 
     int task;
 
-    public Absorption(){
-
+    public Absorption() {
     }
 
     void create(int duration, double newAmount){
