@@ -1,10 +1,7 @@
 package com.benjocraeft.sharehealth;
 
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.Objects;
 
 public class FoodRegeneration extends BukkitRunnable {
 
