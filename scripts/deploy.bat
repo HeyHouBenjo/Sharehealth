@@ -1,0 +1,1 @@
+xcopy target\Sharehealth.jar server\plugins\ /Y
