@@ -105,7 +105,7 @@ public class Sharehealth extends JavaPlugin {
 
         healthManager.updatePlayer(player);
     }
-    
+
     void onPlayerGotDamage(Player player, double damage, DamageCause cause, boolean allowed, double absorbedDamage){
         if (isFailed)
             return;
@@ -239,3 +239,4 @@ public class Sharehealth extends JavaPlugin {
     }
 
 }
+

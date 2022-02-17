@@ -1,1 +1,1 @@
-cp target/Sharehealth.jar server/plugins/
+cp target/sharehealth-1.0.jar server/plugins/

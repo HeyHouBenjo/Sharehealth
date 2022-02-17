@@ -1,7 +1,8 @@
 name: Sharehealth
-version: 1.0
+version: '${project.version}'
 main: com.benjocraeft.sharehealth.Sharehealth
-api-version: 1.17
+api-version: 1.18
+prefix: Sharehealth
 authors: [ BenjoCraeft ]
 description: This plugin makes all players on the server share their health, if one dies, everybody dies.
 website: https://mc.benjocraeft.com

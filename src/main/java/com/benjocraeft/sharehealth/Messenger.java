@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_17_R1.projectiles.CraftBlockProjectileSource;
+import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -21,7 +21,7 @@ import java.util.logging.Logger;
 
 public class Messenger {
 
-    private Logger logger;
+    private final Logger logger;
 
     Messenger(Logger logger){
         this.logger = logger;
@@ -74,8 +74,8 @@ public class Messenger {
                     Entity shooterEntity = (Entity) source;
                     name = shooterEntity.getName();
                 }
-                if (source instanceof CraftBlockProjectileSource){
-                    CraftBlockProjectileSource shooterBlock = (CraftBlockProjectileSource) source;
+                if (source instanceof BlockProjectileSource){
+                    BlockProjectileSource shooterBlock = (BlockProjectileSource) source;
                     return damageMessage(player, damage, shooterBlock.getBlock());
                 }
             }
