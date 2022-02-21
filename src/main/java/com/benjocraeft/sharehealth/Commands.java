@@ -100,6 +100,10 @@ public class Commands implements TabExecutor {
     }
 
     private void commandReset(CommandSender sender){
+        if (!sender.hasPermission("sharehealth.reset")){
+            sender.sendMessage("You don't have permissions for this command!");
+            return;
+        }
         Sharehealth.Instance.reset();
     }
 
