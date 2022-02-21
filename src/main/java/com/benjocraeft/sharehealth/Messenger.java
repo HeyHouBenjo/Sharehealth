@@ -1,5 +1,6 @@
 package com.benjocraeft.sharehealth;
 
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -41,7 +42,8 @@ public class Messenger {
     }
 
     void sendFailedMessage(Player cause){
-        String message = "Mission failed, go next! CAUSE: " + ChatColor.RED + cause.displayName();
+        String playerName = ((TextComponent) cause.displayName()).content();
+        String message = "Mission failed, go next! CAUSE: " + ChatColor.RED + playerName;
         Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
     }
 
@@ -61,7 +63,7 @@ public class Messenger {
     }
 
     private String damageMessage(Player player, double damage, DamageCause cause){
-        return damageMessage(player, damage) + ChatColor.YELLOW + " Cause: " + cause;
+        return damageMessage(player, damage, cause.toString());
     }
 
     private String damageMessage(Player player, double damage, Entity damager){
@@ -80,7 +82,7 @@ public class Messenger {
                 }
             }
         }
-        return damageMessage(player, damage) + ChatColor.YELLOW + " Attacker: " + name;
+        return damageMessage(player, damage, name);
     }
 
     private String damageMessage(Player player, double damage, Block damager){
@@ -92,27 +94,28 @@ public class Messenger {
             e.printStackTrace();
             logger.info("Unknown error. Proceeding");
         }
-        return damageMessage(player, damage) + ChatColor.YELLOW + " Block: " + name;
+        return damageMessage(player, damage, name);
     }
 
-    private String damageMessage(Player player, double damage){
-        String playerS = player.displayName().examinableName();
+    private String damageMessage(Player player, double damage, String source){
+        String playerS = ((TextComponent) player.displayName()).content();
         String damageS = String.format("%.2f", damage / 2);
         return ChatColor.BLUE + playerS
-                + ChatColor.WHITE + " shared "
+                + ChatColor.WHITE + " - "
                 + ChatColor.RED + damageS
-                + ChatColor.WHITE + " hearts damage!";
+                + ChatColor.WHITE + " - "
+                + ChatColor.YELLOW + source;
     }
 
     private String healMessage(Player player, double regainedHealth, RegainReason reason){
-        String playerS = player.displayName().examinableName();
+        String playerS = ((TextComponent) player.displayName()).content();
         String healingS = String.format("%.2f", regainedHealth / 2);
         String causeS = reason.toString();
         return ChatColor.BLUE + playerS
-                + ChatColor.WHITE + " shared "
+                + ChatColor.WHITE + " - "
                 + ChatColor.GREEN + healingS
-                + ChatColor.WHITE + " hearts healing!"
-                + ChatColor.YELLOW + " Cause: " + causeS;
+                + ChatColor.WHITE + " - "
+                + ChatColor.YELLOW + causeS;
     }
 
     String statisticsMessage(){
