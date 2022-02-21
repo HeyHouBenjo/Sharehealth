@@ -38,7 +38,7 @@ public class Sharehealth extends JavaPlugin {
 
     boolean isFailed = false;
 
-    private Map<String, Object> defaultStatus = new HashMap<>();
+    private final Map<String, Object> defaultStatus = new HashMap<>();
     {
         defaultStatus.put("health", 20.);
         defaultStatus.put("isFailed", false);
@@ -215,9 +215,7 @@ public class Sharehealth extends JavaPlugin {
         Map<String, Object> map = fileManager.loadStatus();
 
         defaultStatus.forEach(map::putIfAbsent);
-        map.forEach((String key, Object value) -> {
-            getLogger().info(key + "=" + value);
-        });
+        map.forEach((String key, Object value) -> getLogger().info(key + "=" + value));
 
         healthManager.setHealth((Double)map.get("health"));
         isFailed = (boolean) map.get("isFailed");

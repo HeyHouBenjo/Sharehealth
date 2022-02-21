@@ -41,7 +41,7 @@ public class Messenger {
     }
 
     void sendFailedMessage(Player cause){
-        String message = "Mission failed, go next! CAUSE: " + ChatColor.RED + cause.getDisplayName();
+        String message = "Mission failed, go next! CAUSE: " + ChatColor.RED + cause.displayName();
         Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
     }
 
@@ -96,7 +96,7 @@ public class Messenger {
     }
 
     private String damageMessage(Player player, double damage){
-        String playerS = player.getDisplayName();
+        String playerS = player.displayName().examinableName();
         String damageS = String.format("%.2f", damage / 2);
         return ChatColor.BLUE + playerS
                 + ChatColor.WHITE + " shared "
@@ -105,7 +105,7 @@ public class Messenger {
     }
 
     private String healMessage(Player player, double regainedHealth, RegainReason reason){
-        String playerS = player.getDisplayName();
+        String playerS = player.displayName().examinableName();
         String healingS = String.format("%.2f", regainedHealth / 2);
         String causeS = reason.toString();
         return ChatColor.BLUE + playerS
