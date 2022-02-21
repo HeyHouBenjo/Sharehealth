@@ -1,6 +1,5 @@
 package com.benjocraeft.sharehealth;
 
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
@@ -42,7 +41,7 @@ public class Messenger {
     }
 
     void sendFailedMessage(Player cause){
-        String playerName = ((TextComponent) cause.displayName()).content();
+        String playerName = getPlayerName(cause);
         String message = "Mission failed, go next! CAUSE: " + ChatColor.RED + playerName;
         Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
     }
@@ -98,7 +97,7 @@ public class Messenger {
     }
 
     private String damageMessage(Player player, double damage, String source){
-        String playerS = ((TextComponent) player.displayName()).content();
+        String playerS = getPlayerName(player);
         String damageS = String.format("%.2f", damage / 2);
         return ChatColor.BLUE + playerS
                 + ChatColor.WHITE + " - "
@@ -108,7 +107,7 @@ public class Messenger {
     }
 
     private String healMessage(Player player, double regainedHealth, RegainReason reason){
-        String playerS = ((TextComponent) player.displayName()).content();
+        String playerS = getPlayerName(player);
         String healingS = String.format("%.2f", regainedHealth / 2);
         String causeS = reason.toString();
         return ChatColor.BLUE + playerS
@@ -148,6 +147,14 @@ public class Messenger {
                     append(ChatColor.WHITE).append("-> ").append(description);
         });
         return helpMessage.toString();
+    }
+
+    private String getPlayerName(Player player){
+        //Papermc:
+        //((TextComponent) player.displayName()).content();
+
+        //Spigot:
+        return player.getDisplayName();
     }
 
 }
