@@ -32,16 +32,6 @@
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="settings.editor.selected.configurable" value="configurable.group.build" />
   </component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\Benjo\IdeaProjects\Sharehealth\server\world" />
-      <recent name="C:\Users\Benjo\IdeaProjects\Sharehealth\server" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Benjo\IdeaProjects\Sharehealth\server" />
-      <recent name="C:\Users\Benjo\IdeaProjects\Sharehealth\server\plugins" />
-    </key>
-  </component>
   <component name="RunManager" selected="Python.get_paper">
     <configuration name="Deploy" type="BatchConfigurationType" factoryName="Batch">
       <module name="Sharehealth" />
