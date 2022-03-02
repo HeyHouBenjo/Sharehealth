@@ -47,7 +47,7 @@ public class Messenger {
     }
 
     void onPlayerGotDamageMessage(Player player, double damage, DamageCause cause){
-        String message = damageMessage(player, damage, cause);
+        String message = damageMessage(player, damage, cause.toString());
         playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
@@ -59,10 +59,6 @@ public class Messenger {
     void onPlayerGotDamageMessage(Player player, double damage, Block damager){
         String message = damageMessage(player, damage, damager);
         playersToSendLogs().forEach(p -> p.sendMessage(message));
-    }
-
-    private String damageMessage(Player player, double damage, DamageCause cause){
-        return damageMessage(player, damage, cause.toString());
     }
 
     private String damageMessage(Player player, double damage, Entity damager){

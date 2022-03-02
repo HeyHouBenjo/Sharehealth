@@ -5,7 +5,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -70,7 +69,7 @@ public class Commands implements TabExecutor {
 
 
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, String[] strings) {
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         List<String> list = new ArrayList<>();
 
         if (strings.length == 1){
@@ -88,7 +87,7 @@ public class Commands implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args){
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 
         List<String> argList = Arrays.asList(args);
         Pair<Consumer<CommandSender>, String> command = commands.get(argList);

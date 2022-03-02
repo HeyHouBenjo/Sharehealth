@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Arrays;
+
 
 public class PlayerListeners implements Listener{
 
@@ -33,7 +35,8 @@ public class PlayerListeners implements Listener{
         double damage = event.getFinalDamage();
 
         DamageCause cause = event.getCause();
-
+        // not allowed triggering message
+        // because these types trigger an extra event by entity or by block
         DamageCause[] notAllowed = new DamageCause[]{
                 DamageCause.ENTITY_ATTACK,
                 DamageCause.ENTITY_EXPLOSION,
@@ -42,13 +45,7 @@ public class PlayerListeners implements Listener{
         };
 
         if (entity instanceof Player){
-            boolean allowed = true;
-            for (DamageCause damageCause : notAllowed) {
-                if (cause.equals(damageCause)){
-                    allowed = false;
-                    break;
-                }
-            }
+            boolean allowed = !Arrays.asList(notAllowed).contains(cause);
             double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
             Sharehealth.Instance.onPlayerGotDamage((Player) entity, damage, cause, allowed, absorbedDamage);
         }

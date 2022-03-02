@@ -36,6 +36,7 @@ public class Sharehealth extends JavaPlugin {
         return statistics;
     }
 
+    //If isFailed, plugin changes no default behaviours
     boolean isFailed = false;
 
     private final Map<String, Object> defaultStatus = new HashMap<>();
