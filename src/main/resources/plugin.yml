@@ -1,5 +1,5 @@
 name: Sharehealth
-version: '${project.version}'
+version: 1.0
 main: com.benjocraeft.sharehealth.Sharehealth
 api-version: 1.18
 prefix: Sharehealth

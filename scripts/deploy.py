@@ -1,3 +1,3 @@
 import shutil
 
-shutil.copy2("target/sharehealth-1.0.jar", "server")
+shutil.copy2("out/artifacts/Sharehealth/Sharehealth.jar", "server/plugins")
