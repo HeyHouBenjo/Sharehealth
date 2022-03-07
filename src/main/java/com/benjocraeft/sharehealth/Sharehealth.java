@@ -107,13 +107,13 @@ public class Sharehealth extends JavaPlugin {
         healthManager.updatePlayer(player);
     }
 
-    void onPlayerGotDamage(Player player, double damage, DamageCause cause, boolean allowed, double absorbedDamage){
+    void onPlayerGotDamage(Player player, double damage, DamageCause cause, boolean isMessageAllowed, double absorbedDamage){
         if (isFailed)
             return;
 
         double receivedDamage = damage + absorbedDamage;
 
-        if (allowed)
+        if (isMessageAllowed)
             messenger.onPlayerGotDamageMessage(player, receivedDamage, cause);
 
         statistics.onPlayerGotDamage(player, receivedDamage);

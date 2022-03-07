@@ -51,25 +51,25 @@ public class Messenger {
         playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
-    void onPlayerGotDamageMessage(Player player, double damage, Entity damager){
-        String message = damageMessage(player, damage, damager);
+    void onPlayerGotDamageMessage(Player player, double damage, Entity damagingEntity){
+        String message = damageMessage(player, damage, damagingEntity);
         playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
-    void onPlayerGotDamageMessage(Player player, double damage, Block damager){
-        String message = damageMessage(player, damage, damager);
+    void onPlayerGotDamageMessage(Player player, double damage, Block damagingBlock){
+        String message = damageMessage(player, damage, damagingBlock);
         playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
-    private String damageMessage(Player player, double damage, Entity damager){
-        String name = damager.getName();
-        if (damager instanceof Projectile){
-            Projectile projectile = (Projectile) damager;
+    private String damageMessage(Player player, double damage, Entity damagingEntity){
+        String damagingEntityName = damagingEntity.getName();
+        if (damagingEntity instanceof Projectile){
+            Projectile projectile = (Projectile) damagingEntity;
             ProjectileSource source = projectile.getShooter();
             if (source != null){
                 if (source instanceof Entity){
                     Entity shooterEntity = (Entity) source;
-                    name = shooterEntity.getName();
+                    damagingEntityName = shooterEntity.getName();
                 }
                 if (source instanceof BlockProjectileSource){
                     BlockProjectileSource shooterBlock = (BlockProjectileSource) source;
@@ -77,13 +77,13 @@ public class Messenger {
                 }
             }
         }
-        return damageMessage(player, damage, name);
+        return damageMessage(player, damage, damagingEntityName);
     }
 
-    private String damageMessage(Player player, double damage, Block damager){
+    private String damageMessage(Player player, double damage, Block damagingBlock){
         String name;
         try{
-            name = damager.getType().name();
+            name = damagingBlock.getType().name();
         } catch(NullPointerException e){
             name = "Unknown";
             e.printStackTrace();
@@ -105,12 +105,12 @@ public class Messenger {
     private String healMessage(Player player, double regainedHealth, RegainReason reason){
         String playerS = getPlayerName(player);
         String healingS = String.format("%.2f", regainedHealth / 2);
-        String causeS = reason.toString();
+        String reasonString = reason.toString();
         return ChatColor.BLUE + playerS
                 + ChatColor.WHITE + " - "
                 + ChatColor.GREEN + healingS
                 + ChatColor.WHITE + " - "
-                + ChatColor.YELLOW + causeS;
+                + ChatColor.YELLOW + reasonString;
     }
 
     String statisticsMessage(){
@@ -147,7 +147,7 @@ public class Messenger {
 
     private String getPlayerName(Player player){
         //Papermc:
-        //((TextComponent) player.displayName()).content();
+        //return ((TextComponent) player.displayName()).content();
 
         //Spigot:
         return player.getDisplayName();

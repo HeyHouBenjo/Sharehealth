@@ -31,23 +31,24 @@ public class PlayerListeners implements Listener{
 
     @EventHandler
     public void onEntityGotDamage(final EntityDamageEvent event){
-        Entity entity = event.getEntity();
+        Entity damagedEntity = event.getEntity();
         double damage = event.getFinalDamage();
 
         DamageCause cause = event.getCause();
         // not allowed triggering message
-        // because these types trigger an extra event by entity or by block
-        DamageCause[] notAllowed = new DamageCause[]{
+        // because these types trigger an extra event by entity or by block with more
+        // detailed information for the message
+        DamageCause[] messageNotAllowed = new DamageCause[]{
                 DamageCause.ENTITY_ATTACK,
                 DamageCause.ENTITY_EXPLOSION,
                 DamageCause.PROJECTILE,
                 DamageCause.CONTACT
         };
 
-        if (entity instanceof Player){
-            boolean allowed = !Arrays.asList(notAllowed).contains(cause);
+        if (damagedEntity instanceof Player){
+            boolean isMessageAllowed = !Arrays.asList(messageNotAllowed).contains(cause);
             double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
-            Sharehealth.Instance.onPlayerGotDamage((Player) entity, damage, cause, allowed, absorbedDamage);
+            Sharehealth.Instance.onPlayerGotDamage((Player) damagedEntity, damage, cause, isMessageAllowed, absorbedDamage);
         }
     }
 
