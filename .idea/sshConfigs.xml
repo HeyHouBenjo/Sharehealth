@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="OPEN_SSH" host="benjocraeft.com" id="e919d8cd-3833-4b0e-911f-3f811c9d2c87" port="22" nameFormat="DESCRIPTIVE" username="minecraft" useOpenSSHConfig="true" />
+    </configs>
+  </component>
+</project>
