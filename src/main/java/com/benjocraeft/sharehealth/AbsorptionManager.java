@@ -6,14 +6,14 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Absorption {
+public class AbsorptionManager {
 
     double amount;
     int duration;
 
     int task;
 
-    public Absorption() {
+    public AbsorptionManager() {
     }
 
     void create(int duration, double newAmount){

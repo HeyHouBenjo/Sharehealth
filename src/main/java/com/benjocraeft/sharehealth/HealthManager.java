@@ -35,7 +35,7 @@ public class HealthManager {
     public void updatePlayer(Player player){
         if (player.getGameMode().equals(GameMode.SURVIVAL)) {
             player.setHealth(health);
-            absorption.setAbsorption(player);
+            absorptionManager.setAbsorption(player);
         }
         if (player.getGameMode().equals(GameMode.SPECTATOR))
             player.setHealth(20);
@@ -57,7 +57,7 @@ public class HealthManager {
     boolean onPlayerGotDamage(Player player, double damage, double absorptionDamage){
         subtractHealth(damage);
         setHealthByPlayer(player);
-        absorption.onPlayerGotDamage(player, absorptionDamage);
+        absorptionManager.onPlayerGotDamage(player, absorptionDamage);
 
         return health > 0;
     }
@@ -75,11 +75,11 @@ public class HealthManager {
         }
     }
 
-    final Absorption absorption = new Absorption();
+    final AbsorptionManager absorptionManager = new AbsorptionManager();
 
     void onAbsorptionConsumed(int duration, int amplifier){
         double amount = (amplifier + 1) * 4;
-        absorption.create(duration, amount);
+        absorptionManager.create(duration, amount);
     }
 
 

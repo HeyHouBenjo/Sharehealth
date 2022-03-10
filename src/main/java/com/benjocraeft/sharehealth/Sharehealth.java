@@ -206,8 +206,8 @@ public class Sharehealth extends JavaPlugin {
 
         map.put("health", healthManager.getHealth());
         map.put("isFailed", isFailed);
-        map.put("absorptionAmount", healthManager.absorption.amount);
-        map.put("absorptionDuration", healthManager.absorption.duration);
+        map.put("absorptionAmount", healthManager.absorptionManager.amount);
+        map.put("absorptionDuration", healthManager.absorptionManager.duration);
 
         fileManager.saveStatus(map);
     }
@@ -220,7 +220,7 @@ public class Sharehealth extends JavaPlugin {
 
         healthManager.setHealth((Double)map.get("health"));
         isFailed = (boolean) map.get("isFailed");
-        healthManager.absorption.create(
+        healthManager.absorptionManager.create(
                 (int)map.get("absorptionDuration"),
                 (Double)map.get("absorptionAmount")
         );
