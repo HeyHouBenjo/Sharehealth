@@ -46,6 +46,7 @@ public class AbsorptionManager {
         Bukkit.getScheduler().cancelTask(task);
         duration = 0;
         amount = 0;
+        setAmount(0);
     }
 
     private void setAmount(Player player, double amount){
