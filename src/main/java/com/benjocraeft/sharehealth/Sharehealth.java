@@ -27,6 +27,8 @@ public class Sharehealth extends JavaPlugin {
         return healthManager;
     }
 
+    private TotemManager totemManager;
+
     private Messenger messenger;
     public Messenger getMessenger(){
         return messenger;
@@ -59,6 +61,9 @@ public class Sharehealth extends JavaPlugin {
 
         //Starting Health Manager for controlling actual health
         healthManager = new HealthManager();
+
+        //Totem Manager controls TotemOfUndying behaviour
+        totemManager = new TotemManager();
 
         //Messenger
         messenger = new Messenger(getLogger());
@@ -123,7 +128,9 @@ public class Sharehealth extends JavaPlugin {
 
         statistics.onPlayerGotDamage(player, receivedDamage);
         if (!healthManager.onPlayerGotDamage(player, damage, absorbedDamage)){
-            failed(player);
+            //TODO somehow reverse this because player.setHealth(0) kills instantly without event
+            if (!totemManager.tryToSave())
+                failed(player);
         }
 
         saveStatus();
