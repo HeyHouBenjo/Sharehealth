@@ -1,7 +1,5 @@
-exclude creative and spectator
-comments
-share absorption damage
-totem, 3 options:
-    1. inactive
-    2. set player count needed
-    3. all players needed
+totem:
+    count needed:
+        one, all, percentage, disabled
+    effects:
+        only on player who triggered the totem
