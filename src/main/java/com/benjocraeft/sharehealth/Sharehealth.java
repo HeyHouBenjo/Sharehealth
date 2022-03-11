@@ -73,6 +73,7 @@ public class Sharehealth extends JavaPlugin {
 
         //Load players
         ActiveUUIDs = fileManager.loadPlayers();
+        getLogger().info("Active players count: " + ActiveUUIDs.size());
 
         //Starts custom health regeneration
         new FoodRegeneration();
