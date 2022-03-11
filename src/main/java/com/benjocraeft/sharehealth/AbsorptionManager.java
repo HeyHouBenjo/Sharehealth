@@ -15,14 +15,14 @@ public class AbsorptionManager {
     public AbsorptionManager() {
     }
 
-    void create(int duration, double newAmount){
-        if (duration > 0 && amount > newAmount){
+    void create(int newDuration, double newAmount){
+        if (newDuration > 0 && amount > newAmount){
             return;
         }
 
         Bukkit.getScheduler().cancelTask(task);
         task = Bukkit.getScheduler().scheduleSyncRepeatingTask(Sharehealth.Instance, this::onSecond, 0, 20);
-        this.duration = duration;
+        duration = newDuration;
         setAmount(newAmount);
     }
 
@@ -49,14 +49,14 @@ public class AbsorptionManager {
         setAmount(0);
     }
 
-    private void setAmount(Player player, double amount){
+    private void setAmount(Player triggeringPlayer, double amount){
         if (amount <= 0){
             expire();
             amount = 0;
         }
         this.amount = amount;
         List<Player> players = Sharehealth.GetPlayers();
-        players.remove(player);
+        players.remove(triggeringPlayer);
         players.forEach(this::setAbsorption);
     }
 
