@@ -3,7 +3,6 @@ package com.benjocraeft.sharehealth;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AbsorptionManager {
@@ -28,7 +27,7 @@ public class AbsorptionManager {
     }
 
     private void onSecond(){
-        if (Bukkit.getOnlinePlayers().size() == 0)
+        if (Sharehealth.GetPlayers().size() == 0)
             return;
 
         duration -= 20;
@@ -55,7 +54,7 @@ public class AbsorptionManager {
             amount = 0;
         }
         this.amount = amount;
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        List<Player> players = Sharehealth.GetPlayers();
         players.remove(player);
         players.forEach(this::setAbsorption);
     }

@@ -17,6 +17,7 @@ public class Sharehealth extends JavaPlugin {
     static Sharehealth Instance;
 
     private FileManager fileManager;
+
     public FileManager getFileManager(){
         return fileManager;
     }
@@ -66,9 +67,12 @@ public class Sharehealth extends JavaPlugin {
         statistics = new Statistics(fileManager.loadStatistics(), fileManager.loadSettings());
         getLogger().info("Statistics and Settings loaded");
 
+        //Load status (current health, absorption, etc)
         loadStatus();
         getLogger().info("Status loaded");
 
+        //Load players
+        ActiveUUIDs = fileManager.loadPlayers();
 
         //Starts custom health regeneration
         new FoodRegeneration();
@@ -171,7 +175,7 @@ public class Sharehealth extends JavaPlugin {
             return;
         isFailed = true;
         messenger.sendFailedMessage(cause);
-        Bukkit.getOnlinePlayers().forEach(p -> p.setGameMode(GameMode.SPECTATOR));
+        GetPlayers().forEach(p -> p.setGameMode(GameMode.SPECTATOR));
 
         saveStatus();
     }
@@ -182,7 +186,7 @@ public class Sharehealth extends JavaPlugin {
         statistics.reset();
         fileManager.saveStatistics(statistics.getStatistics());
         healthManager.reset();
-        Bukkit.getOnlinePlayers().forEach(p -> p.setGameMode(GameMode.SURVIVAL));
+        Sharehealth.GetPlayers().forEach(p -> p.setGameMode(GameMode.SURVIVAL));
 
         saveStatus();
     }
@@ -195,10 +199,21 @@ public class Sharehealth extends JavaPlugin {
         }
     }
 
-    static List<Player> GetAlivePlayers(){
-        List<Player> list = new ArrayList<>(Bukkit.getOnlinePlayers());
-        list.removeIf(Entity::isDead);
-        return list;
+    private static List<UUID> ActiveUUIDs = new ArrayList<>();
+    static List<Player> GetPlayers(){
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        players.removeIf(p -> !ActiveUUIDs.contains(p.getUniqueId()));
+        return players;
+    }
+
+    public void addPlayer(UUID uuid){
+        ActiveUUIDs.add(uuid);
+        fileManager.savePlayers(ActiveUUIDs);
+    }
+
+    public void removePlayer(UUID uuid){
+        ActiveUUIDs.remove(uuid);
+        fileManager.savePlayers(ActiveUUIDs);
     }
 
     void saveStatus(){

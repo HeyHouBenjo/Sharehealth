@@ -11,12 +11,12 @@ public class FoodRegeneration extends BukkitRunnable {
 
     @Override
     public void run(){
-        int allPlayersCount = Sharehealth.GetAlivePlayers().size();
+        int allPlayersCount = Sharehealth.GetPlayers().size();
         if (allPlayersCount == 0)
             return;
 
         int allFoodPoints = 0;
-        for (Player p : Sharehealth.GetAlivePlayers()){
+        for (Player p : Sharehealth.GetPlayers()){
             allFoodPoints += p.getFoodLevel();
         }
 

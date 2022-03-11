@@ -9,6 +9,7 @@ public class FileManager {
     final private File settingsFile;
     final private File statisticsFile;
     final private File statusFile;
+    final private File playersFile;
 
     final private File pluginFolder = new File(System.getProperty("user.dir"), "plugins/sharehealth");
     final private String pluginPath = pluginFolder.getPath();
@@ -24,7 +25,7 @@ public class FileManager {
         settingsFile = new File(pluginPath + "/settings.txt");
         statisticsFile = new File(pluginPath + "/statistics.txt");
         statusFile = new File(pluginPath + "/status.txt");
-
+        playersFile = new File(pluginPath + "/players.txt");
 
         try {
             if (settingsFile.createNewFile())
@@ -33,6 +34,8 @@ public class FileManager {
                 logger.info(statisticsFile.getName() + " created");
             if (statusFile.createNewFile())
                 logger.info(statusFile.getName() + " created");
+            if (playersFile.createNewFile())
+                logger.info(playersFile.getName() + " created");
         } catch(IOException e){
             e.printStackTrace();
         }
@@ -41,7 +44,7 @@ public class FileManager {
     public Map<UUID, Boolean> loadSettings(){
         Map<UUID, Boolean> settingsMap = new HashMap<>();
 
-        Map<String, String> map = loadFromFile(settingsFile);
+        Map<String, String> map = loadMapFromFile(settingsFile);
         map.forEach((String uuidString, String hasLoggingString) -> {
             UUID uuid = UUID.fromString(uuidString);
             Boolean hasLogging = Boolean.parseBoolean(hasLoggingString);
@@ -50,10 +53,11 @@ public class FileManager {
 
         return settingsMap;
     }
+
     public Map<UUID, Pair<Double, Double>> loadStatistics(){
         Map<UUID, Pair<Double, Double>> statisticsMap = new HashMap<>();
 
-        Map<String, String> map = loadFromFile(statisticsFile);
+        Map<String, String> map = loadMapFromFile(statisticsFile);
         map.forEach((String s1, String s2) -> {
             UUID uuid = UUID.fromString(s1);
 
@@ -67,10 +71,11 @@ public class FileManager {
 
         return statisticsMap;
     }
+
     public Map<String, Object> loadStatus(){
         Map<String, Object> statusMap = new HashMap<>();
 
-        Map<String, String> map = loadFromFile(statusFile);
+        Map<String, String> map = loadMapFromFile(statusFile);
 
         map.forEach((String key, String value) -> {
             if (value.matches("-?\\d+"))
@@ -84,11 +89,18 @@ public class FileManager {
         return statusMap;
     }
 
+    public List<UUID> loadPlayers(){
+        Map<String, String> loaded = loadMapFromFile(playersFile);
+        List<UUID> playerUUIDs = new ArrayList<>();
+        loaded.keySet().forEach(s -> playerUUIDs.add(UUID.fromString(s)));
+        return playerUUIDs;
+    }
+
     public void saveStatistics(Map<UUID, Pair<Double, Double>> statistics){
         saveStatistics(statisticsFile, statistics);
     }
 
-    private void saveStatistics(File file, Map<UUID, Pair<Double, Double>> statistics){
+    private void saveStatistics(File file, Map<UUID, Pair<Double, Double>> statistics) {
         Map<String, Object> map = new HashMap<>();
 
         statistics.forEach((UUID uuid, Pair<Double, Double> pair) -> {
@@ -96,11 +108,11 @@ public class FileManager {
             map.put(uuidString, Statistics.Rounded(pair.first) + "," + Statistics.Rounded(pair.second));
         });
 
-        saveToFile(file, map);
+        saveMapToFile(file, map);
     }
 
     public void saveStatus(Map<String, Object> statusMap){
-        saveToFile(statusFile, statusMap);
+        saveMapToFile(statusFile, statusMap);
     }
 
     public void saveSettings(Map<UUID, Boolean> settingsMap){
@@ -108,7 +120,15 @@ public class FileManager {
 
         settingsMap.forEach((UUID uuid, Boolean hasLogging) -> map.put(uuid.toString(), hasLogging));
 
-        saveToFile(settingsFile, map);
+        saveMapToFile(settingsFile, map);
+    }
+
+    public void savePlayers(List<UUID> playerUUIDs){
+        Map<String, Object> map = new HashMap<>();
+
+        playerUUIDs.forEach(uuid -> map.put(uuid.toString(), ""));
+
+        saveMapToFile(playersFile, map);
     }
 
     public void backupStats(Map<UUID, Pair<Double, Double>> statistics){
@@ -125,7 +145,7 @@ public class FileManager {
         }
     }
 
-    private Map<String, String> loadFromFile(File file) {
+    private Map<String, String> loadMapFromFile(File file) {
         Map<String, String> map = new HashMap<>();
 
         try{
@@ -136,7 +156,7 @@ public class FileManager {
                 String line;
                 while((line = reader.readLine()) != null){
                     String[] split = line.split("=");
-                    map.put(split[0], split[1]);
+                    map.put(split[0], split.length == 2 ? split[1] : "");
                 }
             } catch (NullPointerException ignore){}
 
@@ -149,7 +169,7 @@ public class FileManager {
         return map;
     }
 
-    private void saveToFile(File file, Map<String, Object> content){
+    private void saveMapToFile(File file, Map<String, Object> content){
         try{
             FileWriter stream = new FileWriter(file);
             BufferedWriter out = new BufferedWriter(stream);

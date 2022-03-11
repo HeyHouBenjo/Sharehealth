@@ -1,6 +1,5 @@
 package com.benjocraeft.sharehealth;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -51,7 +50,7 @@ public class HealthManager {
 
     void reset(){
         health = 20;
-        Bukkit.getOnlinePlayers().forEach(p -> p.setHealth(health));
+        Sharehealth.GetPlayers().forEach(p -> p.setHealth(health));
     }
 
     boolean onPlayerGotDamage(Player player, double damage, double absorptionDamage){
@@ -68,7 +67,7 @@ public class HealthManager {
     }
 
     void setHealthByPlayer(Player player){
-        for (Player p : Sharehealth.GetAlivePlayers()){
+        for (Player p : Sharehealth.GetPlayers()){
             if (p.equals(player))
                 continue;
             p.setHealth(health);

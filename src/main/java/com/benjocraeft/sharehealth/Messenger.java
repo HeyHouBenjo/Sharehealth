@@ -12,10 +12,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
@@ -28,7 +28,7 @@ public class Messenger {
     }
 
     private List<Player> playersToSendLogs(){
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        List<Player> players = Sharehealth.GetPlayers();
         players.removeIf(p -> !Sharehealth.Instance.getLogging(p));
         return players;
     }
@@ -43,7 +43,7 @@ public class Messenger {
     void sendFailedMessage(Player cause){
         String playerName = getPlayerName(cause);
         String message = "Mission failed, go next! CAUSE: " + ChatColor.RED + playerName;
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(message));
+        Sharehealth.GetPlayers().forEach(p -> p.sendMessage(message));
     }
 
     void onPlayerGotDamageMessage(Player player, double damage, DamageCause cause){
@@ -131,7 +131,7 @@ public class Messenger {
         return stats.toString();
     }
 
-    String helpMessage(Map<List<String>, Pair<Consumer<CommandSender>, String>> commands){
+    String helpMessage(Map<List<String>, Pair<BiConsumer<CommandSender, String>, String>> commands){
         StringBuilder helpMessage = new StringBuilder("Usage:");
         commands.forEach((nameList, pair) -> {
             StringBuilder name = new StringBuilder();

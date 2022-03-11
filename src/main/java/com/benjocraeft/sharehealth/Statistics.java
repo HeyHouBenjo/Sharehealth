@@ -1,6 +1,5 @@
 package com.benjocraeft.sharehealth;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -59,7 +58,7 @@ public class Statistics {
 
     void reset(){
         statistics.clear();
-        Bukkit.getOnlinePlayers().forEach(this::putIfAbsent);
+        Sharehealth.GetPlayers().forEach(this::putIfAbsent);
     }
 
 }

@@ -1,5 +1,7 @@
 package com.benjocraeft.sharehealth;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -7,39 +9,48 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class Commands implements TabExecutor {
 
-    final private Map<List<String>, Pair<Consumer<CommandSender>, String>> commands = new HashMap<>();
+    final private Map<List<String>, Pair<BiConsumer<CommandSender, String>, String>> commands = new HashMap<>();
     {
         commands.put(
                 Arrays.asList("get"),
-                Pair.pair(this::commandGetHealth, "Displays current health value.")
+                Pair.pair((sender, arg) -> commandGetHealth(sender), "Displays current health value.")
         );
         commands.put(
                 Arrays.asList("reset"),
-                Pair.pair(this::commandReset, "Gives every player full health and resets 'isFailed' to false. GameMode becomes Survival.")
+                Pair.pair((sender, arg) -> commandReset(sender), "Gives every player full health and resets 'isFailed' to false. GameMode becomes Survival.")
+        );
+        commands.put(
+                Arrays.asList("add"),
+                Pair.pair((sender, name) -> commandActivePlayer(sender, name, true), "Adds a player to the Plugin")
+        );
+        commands.put(
+                Arrays.asList("remove"),
+                Pair.pair((sender, name) -> commandActivePlayer(sender, name, false), "Removes a player from the Plugin")
         );
         commands.put(
                 Arrays.asList("log", "on"),
-                Pair.pair(sender -> this.commandSetLogging(sender, true), "Enables Logging.")
+                Pair.pair((sender, arg) -> commandSetLogging(sender, true), "Enables Logging.")
         );
         commands.put(
                 Arrays.asList("log", "off"),
-                Pair.pair(sender -> this.commandSetLogging(sender, false), "Disables Logging.")
+                Pair.pair((sender, arg) -> commandSetLogging(sender, false), "Disables Logging.")
         );
         commands.put(
                 Arrays.asList("log", "get"),
-                Pair.pair(this::commandGetLogging, "Displays if Logging is enabled.")
+                Pair.pair((sender, arg) -> commandGetLogging(sender), "Displays if Logging is enabled.")
         );
         commands.put(
                 Arrays.asList("stats"),
-                Pair.pair(this::commandSendStats, "Displays statistics about every player.")
+                Pair.pair((sender, arg) -> commandSendStats(sender), "Displays statistics about every player.")
         );
         commands.put(
                 Arrays.asList("help"),
-                Pair.pair(this::commandGetHelp, "Displays help message for command usage.")
+                Pair.pair((sender, arg) -> commandGetHelp(sender), "Displays help message for command usage.")
         );
     }
 
@@ -90,10 +101,13 @@ public class Commands implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 
         List<String> argList = Arrays.asList(args);
-        Pair<Consumer<CommandSender>, String> command = commands.get(argList);
+        Pair<BiConsumer<CommandSender, String>, String> command = commands.get(argList);
+        if (args.length > 1 && (args[0].equals("add") || args[0].equals("remove"))){
+            command = commands.get(Arrays.asList(args[0]));
+        }
         if (command == null)
-            command = Pair.pair(this::unknownCommand, "");
-        command.first.accept(sender);
+            command = Pair.pair((cmdSender, arg) -> unknownCommand(cmdSender), "");
+        command.first.accept(sender, args.length > 0 ? args[args.length - 1] : "");
 
         return true;
     }
@@ -104,6 +118,21 @@ public class Commands implements TabExecutor {
             return;
         }
         Sharehealth.Instance.reset();
+    }
+
+    private void commandActivePlayer(CommandSender sender, String playerName, boolean add){
+        if (!sender.hasPermission("sharehealth.players")){
+            sender.sendMessage("You don't have permissions for this command!");
+            return;
+        }
+        UUID uuid = Bukkit.getOfflinePlayer(playerName).getUniqueId();
+        if (add){
+            Sharehealth.Instance.addPlayer(uuid);
+            sender.sendMessage("Added player " + playerName);
+        } else {
+            Sharehealth.Instance.removePlayer(uuid);
+            sender.sendMessage("Removed player " + playerName);
+        }
     }
 
     private void commandGetHealth(CommandSender sender){
