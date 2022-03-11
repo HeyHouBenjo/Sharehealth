@@ -32,7 +32,7 @@ public class AbsorptionManager {
 
         duration -= 20;
         if (duration <= 0)
-            expire();
+            expire(false);
     }
 
     void onPlayerGotDamage(Player player, double absorptionDamage){
@@ -42,19 +42,20 @@ public class AbsorptionManager {
         setAmount(player, amount - absorptionDamage);
     }
 
-    private void expire(){
+    private void expire(boolean fromBeingBroken){
         Bukkit.getScheduler().cancelTask(task);
         duration = 0;
-        amount = 0;
-        setAmount(0);
+        if (!fromBeingBroken){
+            setAmount(0);
+        }
     }
 
-    private void setAmount(Player triggeringPlayer, double amount){
-        if (amount <= 0){
-            expire();
+    private void setAmount(Player triggeringPlayer, double newAmount){
+        if (newAmount <= 0){
+            expire(true);
             amount = 0;
-        }
-        this.amount = amount;
+        } else
+            amount = newAmount;
         List<Player> players = Sharehealth.GetPlayers();
         players.remove(triggeringPlayer);
         players.forEach(this::setAbsorption);
@@ -65,9 +66,6 @@ public class AbsorptionManager {
     }
 
     void setAbsorption(Player player){
-        if (!isActive())
-            return;
-
         player.setAbsorptionAmount(amount);
     }
 

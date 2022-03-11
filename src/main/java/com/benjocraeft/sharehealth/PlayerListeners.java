@@ -27,6 +27,11 @@ public class PlayerListeners implements Listener{
     }
 
     @EventHandler
+    public void onDeath(PlayerDeathEvent e){
+        Player p = e.getEntity();
+    }
+
+    @EventHandler
     public void onPlayerRespawn(final PlayerRespawnEvent e){
         Player p = e.getPlayer();
         if (Sharehealth.GetPlayers().contains(p))
