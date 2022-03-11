@@ -21,31 +21,38 @@ public class PlayerListeners implements Listener{
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
-        Sharehealth.Instance.onPlayerJoin(e.getPlayer());
+        Player p = e.getPlayer();
+        if (Sharehealth.GetPlayers().contains(p))
+            Sharehealth.Instance.onPlayerJoin(e.getPlayer());
     }
 
     @EventHandler
-    public void onPlayerRespawn(final PlayerRespawnEvent event){
-        Sharehealth.Instance.onPlayerRespawn(event.getPlayer());
+    public void onPlayerRespawn(final PlayerRespawnEvent e){
+        Player p = e.getPlayer();
+        if (Sharehealth.GetPlayers().contains(p))
+            Sharehealth.Instance.onPlayerRespawn(e.getPlayer());
     }
 
     @EventHandler
     public void onEntityGotDamage(final EntityDamageEvent event){
         Entity damagedEntity = event.getEntity();
-        double damage = event.getFinalDamage();
-
-        DamageCause cause = event.getCause();
-        // not allowed triggering message
-        // because these types trigger an extra event by entity or by block with more
-        // detailed information for the message
-        DamageCause[] messageNotAllowed = new DamageCause[]{
-                DamageCause.ENTITY_ATTACK,
-                DamageCause.ENTITY_EXPLOSION,
-                DamageCause.PROJECTILE,
-                DamageCause.CONTACT
-        };
 
         if (damagedEntity instanceof Player){
+            if (!Sharehealth.GetPlayers().contains(damagedEntity))
+                return;
+
+            double damage = event.getFinalDamage();
+            DamageCause cause = event.getCause();
+            // not allowed triggering message
+            // because these types trigger an extra event by entity or by block with more
+            // detailed information for the message
+            DamageCause[] messageNotAllowed = new DamageCause[]{
+                    DamageCause.ENTITY_ATTACK,
+                    DamageCause.ENTITY_EXPLOSION,
+                    DamageCause.PROJECTILE,
+                    DamageCause.CONTACT
+            };
+
             boolean isMessageAllowed = !Arrays.asList(messageNotAllowed).contains(cause);
             double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
             Sharehealth.Instance.onPlayerGotDamage((Player) damagedEntity, damage, cause, isMessageAllowed, absorbedDamage);
@@ -54,37 +61,45 @@ public class PlayerListeners implements Listener{
 
     @EventHandler
     public void onEntityGotDamageByEntity(final EntityDamageByEntityEvent event){
-        Entity entity = event.getEntity();
-        double damage = event.getFinalDamage();
-        Entity cause = event.getDamager();
+        Entity damagedEntity = event.getEntity();
 
-        if (entity instanceof Player) {
+        if (damagedEntity instanceof Player) {
+            if (!Sharehealth.GetPlayers().contains(damagedEntity))
+                return;
+
+            double damage = event.getFinalDamage();
+            Entity cause = event.getDamager();
             double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
-            Sharehealth.Instance.onPlayerGotDamageByEntity((Player)entity, damage, cause, absorbedDamage);
+            Sharehealth.Instance.onPlayerGotDamageByEntity((Player)damagedEntity, damage, cause, absorbedDamage);
         }
     }
 
     @EventHandler
     public void onEntityGotDamageByBlock(final EntityDamageByBlockEvent event){
-        Entity entity = event.getEntity();
-        double damage = event.getFinalDamage();
-        Block cause = event.getDamager();
+        Entity damagedEntity = event.getEntity();
 
-        if (entity instanceof Player) {
+        if (damagedEntity instanceof Player) {
+            if (!Sharehealth.GetPlayers().contains(damagedEntity))
+                return;
+
+            double damage = event.getFinalDamage();
+            Block cause = event.getDamager();
             double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
-            Sharehealth.Instance.onPlayerGotDamageByBlock((Player)entity, damage, cause, absorbedDamage);
+            Sharehealth.Instance.onPlayerGotDamageByBlock((Player)damagedEntity, damage, cause, absorbedDamage);
         }
     }
 
     @EventHandler
     public void onEntityRegainedHealth(final EntityRegainHealthEvent event){
-        Entity entity = event.getEntity();
-        double amount = event.getAmount();
-        RegainReason reason = event.getRegainReason();
+        Entity healedEntity = event.getEntity();
 
-        if (entity instanceof Player){
-            Player player = (Player) entity;
-            if (!Sharehealth.Instance.onPlayerRegainedHealth(player, amount, reason)){
+        if (healedEntity instanceof Player){
+            if (!Sharehealth.GetPlayers().contains(healedEntity))
+                return;
+
+            double amount = event.getAmount();
+            RegainReason reason = event.getRegainReason();
+            if (!Sharehealth.Instance.onPlayerRegainedHealth((Player) healedEntity, amount, reason)){
                 event.setCancelled(true);
             }
         }
@@ -94,6 +109,8 @@ public class PlayerListeners implements Listener{
     public void onEntityPotionEffectModified(final EntityPotionEffectEvent event){
         Entity entity = event.getEntity();
         if (entity instanceof Player){
+            if (!Sharehealth.GetPlayers().contains(entity))
+                return;
             PotionEffect newEffect = event.getNewEffect();
             if (newEffect != null){
                 if (newEffect.getType().equals(PotionEffectType.ABSORPTION)){
