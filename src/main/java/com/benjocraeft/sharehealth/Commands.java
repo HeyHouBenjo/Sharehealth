@@ -1,7 +1,6 @@
 package com.benjocraeft.sharehealth;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -10,7 +9,6 @@ import org.bukkit.util.StringUtil;
 
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class Commands implements TabExecutor {
 
@@ -78,7 +76,7 @@ public class Commands implements TabExecutor {
     }
 
 
-
+    //This is a mess, no idea how to expand it for 3 part commands
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         List<String> list = new ArrayList<>();
@@ -142,15 +140,19 @@ public class Commands implements TabExecutor {
 
     private void commandSetLogging(CommandSender sender, boolean hasLogging){
         if (sender instanceof Player){
-            Player player = (Player) sender;
+            if (!Sharehealth.GetPlayers().contains(sender))
+                return;
 
-            Sharehealth.Instance.onLoggingUpdated(player, hasLogging);
-            player.sendMessage("Logging settings updated.");
+            Sharehealth.Instance.onLoggingUpdated((Player) sender, hasLogging);
+            sender.sendMessage("Logging settings updated.");
         }
     }
 
     private void commandGetLogging(CommandSender sender){
         if (sender instanceof Player){
+            if (!Sharehealth.GetPlayers().contains(sender))
+                return;
+
             String message = "Logging enabled: " + Sharehealth.Instance.getLogging((Player) sender);
             sender.sendMessage(message);
         }
