@@ -134,7 +134,11 @@ public class FileManager {
     public void backupStats(Map<UUID, Pair<Double, Double>> statistics){
         Date date = new Date();
         String dateString = String.valueOf(date.getTime());
-        File backupFile = new File(pluginPath + "/statistics_" + dateString + ".txt");
+        File backupDir = new File(pluginPath + "/old_statistics");
+        if (backupDir.mkdirs()){
+            Sharehealth.Instance.getLogger().info("Folder old_statistics created");
+        }
+        File backupFile = new File(backupDir.getPath() + "/" + dateString + ".txt");
         try {
             if (backupFile.createNewFile()){
                 Sharehealth.Instance.getLogger().info(backupFile.getName() + " created");
