@@ -29,6 +29,9 @@ public class Sharehealth extends JavaPlugin {
     }
 
     private TotemManager totemManager;
+    public TotemManager getTotemManager() {
+        return totemManager;
+    }
 
     private Messenger messenger;
     public Messenger getMessenger(){

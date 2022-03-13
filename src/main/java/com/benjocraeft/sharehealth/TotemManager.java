@@ -14,16 +14,20 @@ public class TotemManager {
 
 
     private Mode mode = Mode.All;
+    public void setMode(Mode mode){
+        this.mode = mode;
+    }
 
     //between 0 and 1
     private double fractionNeeded;
+    public void setFractionNeeded(double value){
+        fractionNeeded = value;
+    }
 
     //Determine if enough players hold a totem of undying
     public boolean totemCanBeUsed(){
         return getHolderCount() >= getMinimumPlayerCount();
     }
-
-
 
     //Activate Totem Effect
     //TODO remove used Totems

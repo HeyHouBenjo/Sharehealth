@@ -9,6 +9,8 @@ import org.bukkit.util.StringUtil;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Commands implements TabExecutor {
 
@@ -24,11 +26,28 @@ public class Commands implements TabExecutor {
         );
         commands.put(
                 Arrays.asList("add"),
-                Pair.pair((sender, name) -> commandActivePlayer(sender, name, true), "Adds a player to the Plugin")
+                Pair.pair((sender, name) -> commandActivePlayer(sender, name, true), "Adds a player to the Plugin.")
         );
         commands.put(
                 Arrays.asList("remove"),
-                Pair.pair((sender, name) -> commandActivePlayer(sender, name, false), "Removes a player from the Plugin")
+                Pair.pair((sender, name) -> commandActivePlayer(sender, name, false), "Removes a player from the Plugin.")
+        );
+        Function<String, Function<BiConsumer<CommandSender, String>, Consumer<String>>> putTotemCommand =
+                name -> function -> description -> commands.put(
+                        Arrays.asList("totem", name),
+                        Pair.pair(function, description)
+                );
+        putTotemCommand.apply("one").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.One)).accept(
+                "Totem of Undying: At least one player needs to hold it."
+        );
+        putTotemCommand.apply("all").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.All)).accept(
+                "Totem of Undying: All players need to hold it."
+        );
+        putTotemCommand.apply("fraction").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.Fraction)).accept(
+                "Totem of Undying: At least fraction * player-count needs to hold it."
+        );
+        putTotemCommand.apply("disabled").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.Disabled)).accept(
+                "Totem of Undying: Disabled"
         );
         commands.put(
                 Arrays.asList("log", "on"),
@@ -136,6 +155,15 @@ public class Commands implements TabExecutor {
     private void commandGetHealth(CommandSender sender){
         String message = "Current health: " + Sharehealth.Instance.getHealthManager().getHealthString();
         sender.sendMessage(message);
+    }
+
+    private void commandSetTotemMode(CommandSender sender, TotemManager.Mode mode) {
+        if (!sender.hasPermission("sharehealth.totem")){
+            sender.sendMessage("You don't have permissions for this command!");
+            return;
+        }
+        Sharehealth.Instance.getTotemManager().setMode(mode);
+        sender.sendMessage("Set Totem mode to " + mode.name());
     }
 
     private void commandSetLogging(CommandSender sender, boolean hasLogging){
