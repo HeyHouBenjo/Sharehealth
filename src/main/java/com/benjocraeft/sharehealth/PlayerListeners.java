@@ -33,6 +33,12 @@ public class PlayerListeners implements Listener{
             Sharehealth.Instance.onPlayerRespawn(e.getPlayer());
     }
 
+    //Normal Totem Of Undying interaction is disabled
+    @EventHandler
+    public void onResurrect(final EntityResurrectEvent e){
+        e.setCancelled(true);
+    }
+
     @EventHandler
     public void onEntityGotDamage(final EntityDamageEvent event){
         Entity damagedEntity = event.getEntity();
@@ -55,10 +61,11 @@ public class PlayerListeners implements Listener{
 
             boolean isMessageAllowed = !Arrays.asList(messageNotAllowed).contains(cause);
             double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
-            Sharehealth.Instance.onPlayerGotDamage((Player) damagedEntity, damage, cause, isMessageAllowed, absorbedDamage);
+            Sharehealth.Instance.onPlayerGotDamage((Player) damagedEntity, damage, cause, isMessageAllowed, absorbedDamage, event::setCancelled);
         }
     }
 
+    //Only for logging/messaging
     @EventHandler
     public void onEntityGotDamageByEntity(final EntityDamageByEntityEvent event){
         Entity damagedEntity = event.getEntity();
@@ -74,6 +81,7 @@ public class PlayerListeners implements Listener{
         }
     }
 
+    //Only for logging/messaging
     @EventHandler
     public void onEntityGotDamageByBlock(final EntityDamageByBlockEvent event){
         Entity damagedEntity = event.getEntity();

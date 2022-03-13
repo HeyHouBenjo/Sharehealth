@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Consumer;
 
 import java.util.*;
 
@@ -117,7 +118,8 @@ public class Sharehealth extends JavaPlugin {
         healthManager.updatePlayer(player);
     }
 
-    void onPlayerGotDamage(Player player, double damage, DamageCause cause, boolean isMessageAllowed, double absorbedDamage){
+    void onPlayerGotDamage(Player player, double damage, DamageCause cause,
+                           boolean isMessageAllowed, double absorbedDamage, Consumer<Boolean> cancelDamage){
         if (isFailed)
             return;
 
@@ -127,10 +129,18 @@ public class Sharehealth extends JavaPlugin {
             messenger.onPlayerGotDamageMessage(player, receivedDamage, cause);
 
         statistics.onPlayerGotDamage(player, receivedDamage);
-        if (!healthManager.onPlayerGotDamage(player, damage, absorbedDamage)){
-            //TODO somehow reverse this because player.setHealth(0) kills instantly without event
-            if (!totemManager.tryToSave())
+
+        if (healthManager.wouldCauseDeath(damage)){
+            if (totemManager.totemCanBeUsed()){
+                healthManager.onTotemTriggered();
+                totemManager.activate(player);
+                cancelDamage.accept(true);
+            } else {
+                healthManager.onPlayerGotDamage(player, damage, absorbedDamage);
                 failed(player);
+            }
+        } else {
+            healthManager.onPlayerGotDamage(player, damage, absorbedDamage);
         }
 
         saveStatus();
@@ -167,7 +177,7 @@ public class Sharehealth extends JavaPlugin {
 
     void onFoodRegeneration(){
         healthManager.addHealth(1);
-        healthManager.setHealthByPlayer(null);
+        healthManager.applyHealthToAllExcept(null);
 
         saveStatus();
     }

@@ -53,25 +53,35 @@ public class HealthManager {
         Sharehealth.GetPlayers().forEach(p -> p.setHealth(health));
     }
 
-    boolean onPlayerGotDamage(Player player, double damage, double absorptionDamage){
-        subtractHealth(damage);
-        setHealthByPlayer(player);
-        absorptionManager.onPlayerGotDamage(player, absorptionDamage);
+    boolean wouldCauseDeath(double damage){
+        double newHealth = health - damage;
+        return newHealth <= 0;
+    }
 
-        return health > 0;
+    void onPlayerGotDamage(Player player, double damage, double absorptionDamage){
+        subtractHealth(damage);
+        applyHealthToAllExcept(player);
+        absorptionManager.onPlayerGotDamage(player, absorptionDamage);
     }
 
     void onPlayerRegainedHealth(Player player, double regainedHealth){
         addHealth(regainedHealth);
-        setHealthByPlayer(player);
+        applyHealthToAllExcept(player);
     }
 
-    void setHealthByPlayer(Player player){
+    void applyHealthToAllExcept(Player player){
         for (Player p : Sharehealth.GetPlayers()){
             if (p.equals(player))
                 continue;
             p.setHealth(health);
         }
+    }
+
+    //When totem is triggered, set health to 1 and remove absorption
+    void onTotemTriggered(){
+        setHealth(1);
+        applyHealthToAllExcept(null);
+        absorptionManager.expire(false);
     }
 
     final AbsorptionManager absorptionManager = new AbsorptionManager();

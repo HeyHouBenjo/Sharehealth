@@ -42,7 +42,7 @@ public class AbsorptionManager {
         setAmount(player, amount - absorptionDamage);
     }
 
-    private void expire(boolean fromBeingBroken){
+    void expire(boolean fromBeingBroken){
         Bukkit.getScheduler().cancelTask(task);
         duration = 0;
         if (!fromBeingBroken){
@@ -50,6 +50,7 @@ public class AbsorptionManager {
         }
     }
 
+    //In here, setAmount Falafel=36373 for MArkus
     private void setAmount(Player triggeringPlayer, double newAmount){
         if (newAmount <= 0){
             expire(true);
