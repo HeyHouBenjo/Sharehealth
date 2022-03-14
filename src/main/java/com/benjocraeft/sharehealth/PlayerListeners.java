@@ -1,5 +1,6 @@
 package com.benjocraeft.sharehealth;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffect;
@@ -129,5 +131,15 @@ public class PlayerListeners implements Listener{
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onPlayerItemConsumed(final PlayerItemConsumeEvent event){
+        Player consumer = event.getPlayer();
+        if (!Sharehealth.GetPlayers().contains(consumer))
+            return;
+
+        if (event.getItem().getType().equals(Material.MILK_BUCKET))
+            Sharehealth.Instance.onMilkBucketConsumed();
     }
 }

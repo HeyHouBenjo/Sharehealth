@@ -196,6 +196,12 @@ public class Sharehealth extends JavaPlugin {
         saveStatus();
     }
 
+    void onMilkBucketConsumed(){
+        healthManager.onMilkBucketConsumed();
+
+        saveStatus();
+    }
+
     private void failed(Player cause){
         if (isFailed)
             return;

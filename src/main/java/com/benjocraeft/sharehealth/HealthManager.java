@@ -87,6 +87,8 @@ public class HealthManager {
         absorptionManager.create(duration, amount);
     }
 
-
+    void onMilkBucketConsumed(){
+        absorptionManager.expire(false);
+    }
 
 }
