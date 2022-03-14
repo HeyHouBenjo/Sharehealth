@@ -70,11 +70,7 @@ public class HealthManager {
     }
 
     void applyHealthToAllExcept(Player player){
-        for (Player p : Sharehealth.GetPlayers()){
-            if (p.equals(player))
-                continue;
-            p.setHealth(health);
-        }
+        Sharehealth.GetPlayers(player).forEach(p -> p.setHealth(health));
     }
 
     //When totem is triggered, set health to 1 and remove absorption

@@ -129,11 +129,7 @@ public class Sharehealth extends JavaPlugin {
         if (isFailed)
             return;
 
-        GetPlayers().forEach(p -> {
-            if (p == player)
-                return;
-            p.playEffect(EntityEffect.HURT);
-        });
+        GetPlayers(player).forEach(p -> p.playEffect(EntityEffect.HURT));
 
         double receivedDamage = damage + absorbedDamage;
 
@@ -233,6 +229,11 @@ public class Sharehealth extends JavaPlugin {
     static List<Player> GetPlayers(){
         List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
         players.removeIf(p -> !ActiveUUIDs.contains(p.getUniqueId()));
+        return players;
+    }
+    static List<Player> GetPlayers(Player except){
+        List<Player> players = GetPlayers();
+        players.remove(except);
         return players;
     }
 
