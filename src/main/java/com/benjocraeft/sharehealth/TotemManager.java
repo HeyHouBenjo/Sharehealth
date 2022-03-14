@@ -30,13 +30,25 @@ public class TotemManager {
     }
 
     //Activate Totem Effect
-    //TODO remove used Totems
+    //Remove used items
     //Finally buy some Falafel for Markus
     public void activate(Player triggeringPlayer){
+
+        List<Player> allPlayers = Sharehealth.GetPlayers();
 
         //Remove all effects from Player
         for (PotionEffect e : triggeringPlayer.getActivePotionEffects())
             triggeringPlayer.removePotionEffect(e.getType());
+
+        //Destroy needed totem items
+        //Try to destroy holders item first, then the remaining
+        //Only destroy as many items as were needed for effect to trigger
+        int totemsRemoveCount = getMinimumPlayerCount();
+        if (destroyItemFrom(triggeringPlayer))
+            totemsRemoveCount--;
+        for (int pIndex = 0; pIndex < allPlayers.size() && totemsRemoveCount > 0; pIndex++)
+            if (destroyItemFrom(allPlayers.get(pIndex)))
+                totemsRemoveCount--;
 
         //Regeneration II 40sec
         PotionEffect regeneration = new PotionEffect(PotionEffectType.REGENERATION, 40 * 20, 1);
@@ -50,9 +62,26 @@ public class TotemManager {
         PotionEffect absorption = new PotionEffect(PotionEffectType.ABSORPTION, 5 * 20, 1);
         triggeringPlayer.addPotionEffect(absorption);
 
-        //Play Totem Effect to every Player
-        for (Player p : Sharehealth.GetPlayers())
+        //Play Totem Effect for every Player
+        for (Player p : allPlayers)
             p.playEffect(EntityEffect.TOTEM_RESURRECT);
+    }
+
+    private boolean destroyItemFrom(Player holder){
+        ItemStack main = holder.getInventory().getItemInMainHand();
+        if (main.getType().equals(Material.TOTEM_OF_UNDYING)){
+            //destroy item
+            main.setAmount(0);
+            return true;
+        } else {
+            ItemStack off = holder.getInventory().getItemInOffHand();
+            if (off.getType().equals(Material.TOTEM_OF_UNDYING)){
+                //destroy item
+                off.setAmount(0);
+                return true;
+            }
+        }
+        return false;
     }
 
     //Calculates how many players are needed at least to trigger the totem for everyone
