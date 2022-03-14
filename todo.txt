@@ -1,5 +1,1 @@
-totem:
-    count needed:
-        one, all, percentage, disabled
-    effects:
-        only on player who triggered the totem
+absorption: remove on drinking milk

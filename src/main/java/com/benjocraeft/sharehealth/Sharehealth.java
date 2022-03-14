@@ -1,6 +1,7 @@
 package com.benjocraeft.sharehealth;
 
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.command.PluginCommand;
@@ -127,6 +128,12 @@ public class Sharehealth extends JavaPlugin {
                            boolean isMessageAllowed, double absorbedDamage, Consumer<Boolean> cancelDamage){
         if (isFailed)
             return;
+
+        GetPlayers().forEach(p -> {
+            if (p == player)
+                return;
+            p.playEffect(EntityEffect.HURT);
+        });
 
         double receivedDamage = damage + absorbedDamage;
 
