@@ -17,11 +17,21 @@ public class TotemManager {
     public void setMode(Mode mode){
         this.mode = mode;
     }
+    public Mode getMode(){
+        return mode;
+    }
 
     //between 0 and 1
     private double fractionNeeded;
     public void setFractionNeeded(double value){
+        if (value < 0)
+            value = 0;
+        if (value > 1)
+            value = 1;
         fractionNeeded = value;
+    }
+    public double getFractionNeeded() {
+        return fractionNeeded;
     }
 
     //Determine if enough players hold a totem of undying

@@ -44,10 +44,16 @@ public class Commands implements TabExecutor {
                 "Totem of Undying: All players need to hold it."
         );
         putTotemCommand.apply("fraction").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.Fraction)).accept(
-                "Totem of Undying: At least fraction * player-count needs to hold it."
+                "Totem of Undying: At least fraction * player-count need to hold it."
         );
         putTotemCommand.apply("disabled").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.Disabled)).accept(
                 "Totem of Undying: Disabled"
+        );
+        putTotemCommand.apply("setfraction").apply(this::commandSetTotemFraction).accept(
+                "Totem of Undying: Set amount for mode: fraction."
+        );
+        putTotemCommand.apply("getfraction").apply((sender, arg) -> commandGetTotemFraction(sender)).accept(
+                "Totem of Undying: Get amount for mode: fraction."
         );
         commands.put(
                 Arrays.asList("log", "on"),
@@ -117,16 +123,26 @@ public class Commands implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
 
-        List<String> argList = Arrays.asList(args);
-        Pair<BiConsumer<CommandSender, String>, String> command = commands.get(argList);
-        if (args.length > 1 && (args[0].equals("add") || args[0].equals("remove"))){
-            command = commands.get(Arrays.asList(args[0]));
-        }
-        if (command == null)
-            command = Pair.pair((cmdSender, arg) -> unknownCommand(cmdSender), "");
+        Pair<BiConsumer<CommandSender, String>, String> command = getCommand(args);
+
         command.first.accept(sender, args.length > 0 ? args[args.length - 1] : "");
 
         return true;
+    }
+
+    private Pair<BiConsumer<CommandSender, String>, String> getCommand(String[] args){
+        List<String> argList = Arrays.asList(args);
+
+        if (commands.containsKey(argList))
+            return commands.get(argList);
+
+        if (args.length > 1){
+            List<String> argListWithoutLast = argList.subList(0, args.length - 1);
+            if (commands.containsKey(argListWithoutLast))
+                return commands.get(argListWithoutLast);
+        }
+
+        return Pair.pair((cmdSender, arg) -> unknownCommand(cmdSender), "");
     }
 
     private void commandReset(CommandSender sender){
@@ -166,6 +182,27 @@ public class Commands implements TabExecutor {
         sender.sendMessage("Set Totem mode to " + mode.name());
     }
 
+    private void commandSetTotemFraction(CommandSender sender, String amountStr){
+        if (!sender.hasPermission("sharehealth.totem")){
+            sender.sendMessage("You don't have permissions for this command!");
+            return;
+        }
+
+        try {
+            double fraction = Double.parseDouble(amountStr);
+            Sharehealth.Instance.getTotemManager().setFractionNeeded(fraction);
+            double newValue = Sharehealth.Instance.getTotemManager().getFractionNeeded();
+            sender.sendMessage("Set totem fraction value to " + newValue);
+        } catch (NumberFormatException e){
+            sender.sendMessage("Provided value was not a number between 0.0 and 1.0!");
+        }
+    }
+
+    private void commandGetTotemFraction(CommandSender sender){
+        double value = Sharehealth.Instance.getTotemManager().getFractionNeeded();
+        sender.sendMessage("Totem fraction value: " + value);
+    }
+
     private void commandSetLogging(CommandSender sender, boolean hasLogging){
         if (sender instanceof Player){
             if (!Sharehealth.GetPlayers().contains(sender))
@@ -184,7 +221,6 @@ public class Commands implements TabExecutor {
             String message = "Logging enabled: " + Sharehealth.Instance.getLogging((Player) sender);
             sender.sendMessage(message);
         }
-
     }
 
     private void commandSendStats(CommandSender sender){

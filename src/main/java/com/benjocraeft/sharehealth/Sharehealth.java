@@ -52,6 +52,8 @@ public class Sharehealth extends JavaPlugin {
         defaultStatus.put("isFailed", false);
         defaultStatus.put("absorptionAmount", 0.);
         defaultStatus.put("absorptionDuration", 0);
+        defaultStatus.put("totemMode", 0);
+        defaultStatus.put("totemFraction", 0.5);
     }
 
     @Override
@@ -207,7 +209,7 @@ public class Sharehealth extends JavaPlugin {
         statistics.reset();
         fileManager.saveStatistics(statistics.getStatistics());
         healthManager.reset();
-        Sharehealth.GetPlayers().forEach(p -> p.setGameMode(GameMode.SURVIVAL));
+        GetPlayers().forEach(p -> p.setGameMode(GameMode.SURVIVAL));
 
         saveStatus();
     }
@@ -244,6 +246,8 @@ public class Sharehealth extends JavaPlugin {
         map.put("isFailed", isFailed);
         map.put("absorptionAmount", healthManager.absorptionManager.amount);
         map.put("absorptionDuration", healthManager.absorptionManager.duration);
+        map.put("totemMode", totemManager.getMode().ordinal());
+        map.put("totemFraction", totemManager.getFractionNeeded());
 
         fileManager.saveStatus(map);
     }
@@ -260,6 +264,8 @@ public class Sharehealth extends JavaPlugin {
                 (int)map.get("absorptionDuration"),
                 (Double)map.get("absorptionAmount")
         );
+        totemManager.setMode(TotemManager.Mode.values()[(int)map.get("totemMode")]);
+        totemManager.setFractionNeeded((Double)map.get("totemFraction"));
     }
 
     void onLoggingUpdated(Player player, boolean hasLogging){

@@ -4,19 +4,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason;
+import org.bukkit.projectiles.BlockProjectileSource;
 import org.bukkit.projectiles.ProjectileSource;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class Messenger {
@@ -132,17 +132,22 @@ public class Messenger {
     }
 
     String helpMessage(Map<List<String>, Pair<BiConsumer<CommandSender, String>, String>> commands){
-        StringBuilder helpMessage = new StringBuilder("Usage:");
+        List<String> lines = new ArrayList<>();
         commands.forEach((nameList, pair) -> {
             StringBuilder name = new StringBuilder();
             nameList.forEach(str -> name.append(str).append(" "));
 
             String description = pair.second;
-            helpMessage.append("\n").
-                    append(ChatColor.AQUA).append(name).
-                    append(ChatColor.WHITE).append("-> ").append(description);
+            String message = "\n" +
+                    ChatColor.AQUA + name +
+                    ChatColor.WHITE + "-> " + description;
+            lines.add(message);
         });
-        return helpMessage.toString();
+        StringBuilder completeMessage = new StringBuilder("Usage:");
+        for (String line : lines.stream().sorted().toList())
+            completeMessage.append(line);
+
+        return completeMessage.toString();
     }
 
     private String getPlayerName(Player player){
