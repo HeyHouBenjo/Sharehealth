@@ -55,6 +55,9 @@ public class Commands implements TabExecutor {
         putTotemCommand.apply("getfraction").apply((sender, arg) -> commandGetTotemFraction(sender)).accept(
                 "Totem of Undying: Get amount for mode: fraction."
         );
+        putTotemCommand.apply("get").apply((sender, arg) -> commandGetTotemMode(sender)).accept(
+                "Totem of Undying: Get current mode."
+        );
         commands.put(
                 Arrays.asList("log", "on"),
                 Pair.pair((sender, arg) -> commandSetLogging(sender, true), "Enables Logging.")
@@ -180,6 +183,11 @@ public class Commands implements TabExecutor {
         }
         Sharehealth.Instance.getTotemManager().setMode(mode);
         sender.sendMessage("Set Totem mode to " + mode.name());
+    }
+
+    private void commandGetTotemMode(CommandSender sender){
+        TotemManager.Mode mode = Sharehealth.Instance.getTotemManager().getMode();
+        sender.sendMessage("Current Totem mode: " + mode.name());
     }
 
     private void commandSetTotemFraction(CommandSender sender, String amountStr){
