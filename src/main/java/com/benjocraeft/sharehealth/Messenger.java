@@ -63,16 +63,13 @@ public class Messenger {
 
     private String damageMessage(Player player, double damage, Entity damagingEntity){
         String damagingEntityName = damagingEntity.getName();
-        if (damagingEntity instanceof Projectile){
-            Projectile projectile = (Projectile) damagingEntity;
+        if (damagingEntity instanceof Projectile projectile){
             ProjectileSource source = projectile.getShooter();
             if (source != null){
-                if (source instanceof Entity){
-                    Entity shooterEntity = (Entity) source;
+                if (source instanceof Entity shooterEntity){
                     damagingEntityName = shooterEntity.getName();
                 }
-                if (source instanceof BlockProjectileSource){
-                    BlockProjectileSource shooterBlock = (BlockProjectileSource) source;
+                if (source instanceof BlockProjectileSource shooterBlock){
                     return damageMessage(player, damage, shooterBlock.getBlock());
                 }
             }
