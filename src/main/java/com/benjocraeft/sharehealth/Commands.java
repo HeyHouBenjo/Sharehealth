@@ -10,6 +10,7 @@ import org.bukkit.util.StringUtil;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("NullableProblems")
 public class Commands implements TabExecutor {
 
     final private Map<List<String>, Pair<BiConsumer<CommandSender, String>, String>> commands = new HashMap<>();
