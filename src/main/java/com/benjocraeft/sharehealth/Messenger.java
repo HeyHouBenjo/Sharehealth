@@ -19,57 +19,51 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.logging.Logger;
 
-public class Messenger {
+public record Messenger(Logger logger) {
 
-    private final Logger logger;
-
-    Messenger(Logger logger){
-        this.logger = logger;
-    }
-
-    private List<Player> playersToSendLogs(){
+    private List<Player> playersToSendLogs() {
         List<Player> players = Sharehealth.GetPlayers();
         players.removeIf(p -> !Sharehealth.Instance.getLogging(p));
         return players;
     }
 
-    void onPlayerRegainedHealth(Player player, double amount, RegainReason reason){
+    void onPlayerRegainedHealth(Player player, double amount, RegainReason reason) {
         if (amount <= 0)
             return;
         String message = healMessage(player, amount, reason);
         playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
-    void sendFailedMessage(Player cause){
+    void sendFailedMessage(Player cause) {
         String playerName = getPlayerName(cause);
         String message = "Mission failed, go next! CAUSE: " + ChatColor.RED + playerName;
         Sharehealth.GetPlayers().forEach(p -> p.sendMessage(message));
     }
 
-    void onPlayerGotDamageMessage(Player player, double damage, DamageCause cause){
+    void onPlayerGotDamageMessage(Player player, double damage, DamageCause cause) {
         String message = damageMessage(player, damage, cause.toString());
         playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
-    void onPlayerGotDamageMessage(Player player, double damage, Entity damagingEntity){
+    void onPlayerGotDamageMessage(Player player, double damage, Entity damagingEntity) {
         String message = damageMessage(player, damage, damagingEntity);
         playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
-    void onPlayerGotDamageMessage(Player player, double damage, Block damagingBlock){
+    void onPlayerGotDamageMessage(Player player, double damage, Block damagingBlock) {
         String message = damageMessage(player, damage, damagingBlock);
         playersToSendLogs().forEach(p -> p.sendMessage(message));
     }
 
-    private String damageMessage(Player player, double damage, Entity damagingEntity){
+    private String damageMessage(Player player, double damage, Entity damagingEntity) {
         String damagingEntityName = damagingEntity.getName();
-        if (damagingEntity instanceof Projectile projectile){
+        if (damagingEntity instanceof Projectile projectile) {
             ProjectileSource source = projectile.getShooter();
-            if (source != null){
-                if (source instanceof Entity shooterEntity){
+            if (source != null) {
+                if (source instanceof Entity shooterEntity) {
                     damagingEntityName = shooterEntity.getName();
                 }
-                if (source instanceof BlockProjectileSource shooterBlock){
+                if (source instanceof BlockProjectileSource shooterBlock) {
                     return damageMessage(player, damage, shooterBlock.getBlock());
                 }
             }
@@ -77,11 +71,11 @@ public class Messenger {
         return damageMessage(player, damage, damagingEntityName);
     }
 
-    private String damageMessage(Player player, double damage, Block damagingBlock){
+    private String damageMessage(Player player, double damage, Block damagingBlock) {
         String name;
-        try{
+        try {
             name = damagingBlock.getType().name();
-        } catch(NullPointerException e){
+        } catch (NullPointerException e) {
             name = "Unknown";
             e.printStackTrace();
             logger.info("Unknown error. Proceeding");
@@ -89,7 +83,7 @@ public class Messenger {
         return damageMessage(player, damage, name);
     }
 
-    private String damageMessage(Player player, double damage, String source){
+    private String damageMessage(Player player, double damage, String source) {
         String playerS = getPlayerName(player);
         String damageS = String.format("%.2f", damage / 2);
         return ChatColor.BLUE + playerS
@@ -99,7 +93,7 @@ public class Messenger {
                 + ChatColor.YELLOW + source;
     }
 
-    private String healMessage(Player player, double regainedHealth, RegainReason reason){
+    private String healMessage(Player player, double regainedHealth, RegainReason reason) {
         String playerS = getPlayerName(player);
         String healingS = String.format("%.2f", regainedHealth / 2);
         String reasonString = reason.toString();
@@ -110,7 +104,7 @@ public class Messenger {
                 + ChatColor.YELLOW + reasonString;
     }
 
-    String statisticsMessage(){
+    String statisticsMessage() {
         Map<UUID, Pair<Double, Double>> statistics = Sharehealth.Instance.getStatistics().getStatistics();
         if (statistics.size() == 0)
             return "There are no statistics yet.";
@@ -128,7 +122,7 @@ public class Messenger {
         return stats.toString();
     }
 
-    String helpMessage(Map<List<String>, Pair<BiConsumer<CommandSender, String>, String>> commands){
+    String helpMessage(Map<List<String>, Pair<BiConsumer<CommandSender, String>, String>> commands) {
         List<String> lines = new ArrayList<>();
         commands.forEach((nameList, pair) -> {
             StringBuilder name = new StringBuilder();
@@ -147,7 +141,7 @@ public class Messenger {
         return completeMessage.toString();
     }
 
-    private String getPlayerName(Player player){
+    private String getPlayerName(Player player) {
         //Papermc:
         //return ((TextComponent) player.displayName()).content();
 
