@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -57,8 +58,11 @@ public class PlayerListeners implements Listener{
             DamageCause[] messageNotAllowed = new DamageCause[]{
                     DamageCause.ENTITY_ATTACK,
                     DamageCause.ENTITY_EXPLOSION,
+                    DamageCause.ENTITY_SWEEP_ATTACK,
                     DamageCause.PROJECTILE,
-                    DamageCause.CONTACT
+                    DamageCause.FALLING_BLOCK,
+                    DamageCause.HOT_FLOOR,
+                    DamageCause.THORNS,
             };
 
             boolean isMessageAllowed = !Arrays.asList(messageNotAllowed).contains(cause);
@@ -68,7 +72,8 @@ public class PlayerListeners implements Listener{
     }
 
     //Only for logging/messaging
-    @EventHandler
+    //lower priority so the message will be read even if player dies from damage
+    @EventHandler (priority = EventPriority.LOW)
     public void onEntityGotDamageByEntity(final EntityDamageByEntityEvent event){
         Entity damagedEntity = event.getEntity();
 
@@ -77,14 +82,15 @@ public class PlayerListeners implements Listener{
                 return;
 
             double damage = event.getFinalDamage();
-            Entity cause = event.getDamager();
+            Entity damagingEntity = event.getDamager();
             double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
-            Sharehealth.Instance.onPlayerGotDamageByEntity((Player)damagedEntity, damage, cause, absorbedDamage);
+            Sharehealth.Instance.onPlayerGotDamageByEntity((Player)damagedEntity, damage, damagingEntity, absorbedDamage);
         }
     }
 
     //Only for logging/messaging
-    @EventHandler
+    //lower priority so the message will be read even if player dies from damage
+    @EventHandler (priority = EventPriority.LOW)
     public void onEntityGotDamageByBlock(final EntityDamageByBlockEvent event){
         Entity damagedEntity = event.getEntity();
 
@@ -93,9 +99,13 @@ public class PlayerListeners implements Listener{
                 return;
 
             double damage = event.getFinalDamage();
-            Block cause = event.getDamager();
+
+            Block damagingBlock = event.getDamager();
+            if (damagingBlock == null)
+                return;
+
             double absorbedDamage = -event.getOriginalDamage(DamageModifier.ABSORPTION);
-            Sharehealth.Instance.onPlayerGotDamageByBlock((Player)damagedEntity, damage, cause, absorbedDamage);
+            Sharehealth.Instance.onPlayerGotDamageByBlock((Player)damagedEntity, damage, damagingBlock, absorbedDamage);
         }
     }
 
