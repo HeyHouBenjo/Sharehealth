@@ -9,83 +9,40 @@ import org.bukkit.util.StringUtil;
 
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class Commands implements TabExecutor {
 
     final private Map<List<String>, Pair<BiConsumer<CommandSender, String>, String>> commands = new HashMap<>();
     {
-        commands.put(
-                Arrays.asList("get"),
-                Pair.pair((sender, arg) -> commandGetHealth(sender), "Displays current health value.")
-        );
-        commands.put(
-                Arrays.asList("reset"),
-                Pair.pair((sender, arg) -> commandReset(sender), "Gives every player full health and resets 'isFailed' to false. GameMode becomes Survival.")
-        );
-        commands.put(
-                Arrays.asList("add"),
-                Pair.pair((sender, name) -> commandActivePlayer(sender, name, true), "Adds a player to the Plugin.")
-        );
-        commands.put(
-                Arrays.asList("remove"),
-                Pair.pair((sender, name) -> commandActivePlayer(sender, name, false), "Removes a player from the Plugin.")
-        );
-        Function<String, Function<BiConsumer<CommandSender, String>, Consumer<String>>> putTotemCommand =
-                name -> function -> description -> commands.put(
-                        Arrays.asList("totem", name),
-                        Pair.pair(function, description)
-                );
-        putTotemCommand.apply("one").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.One)).accept(
-                "Totem of Undying: At least one player needs to hold it."
-        );
-        putTotemCommand.apply("all").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.All)).accept(
-                "Totem of Undying: All players need to hold it."
-        );
-        putTotemCommand.apply("fraction").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.Fraction)).accept(
-                "Totem of Undying: At least fraction * player-count need to hold it."
-        );
-        putTotemCommand.apply("disabled").apply((sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.Disabled)).accept(
-                "Totem of Undying: Disabled"
-        );
-        putTotemCommand.apply("setfraction").apply(this::commandSetTotemFraction).accept(
-                "Totem of Undying: Set amount for mode: fraction."
-        );
-        putTotemCommand.apply("getfraction").apply((sender, arg) -> commandGetTotemFraction(sender)).accept(
-                "Totem of Undying: Get amount for mode: fraction."
-        );
-        putTotemCommand.apply("get").apply((sender, arg) -> commandGetTotemMode(sender)).accept(
-                "Totem of Undying: Get current mode."
-        );
-        commands.put(
-                Arrays.asList("log", "on"),
-                Pair.pair((sender, arg) -> commandSetLogging(sender, true), "Enables Logging.")
-        );
-        commands.put(
-                Arrays.asList("log", "off"),
-                Pair.pair((sender, arg) -> commandSetLogging(sender, false), "Disables Logging.")
-        );
-        commands.put(
-                Arrays.asList("log", "get"),
-                Pair.pair((sender, arg) -> commandGetLogging(sender), "Displays if Logging is enabled.")
-        );
-        commands.put(
-                Arrays.asList("stats"),
-                Pair.pair((sender, arg) -> commandSendStats(sender), "Displays statistics about every player.")
-        );
-        commands.put(
-                Arrays.asList("help"),
-                Pair.pair((sender, arg) -> commandGetHelp(sender), "Displays help message for command usage.")
-        );
+        addCommand("get", (sender, arg) -> commandGetHealth(sender), "Displays current health value.");
+        addCommand("reset", (sender, arg) -> commandReset(sender), "Gives every player full health and resets 'isFailed' to false. GameMode becomes Survival.");
+        addCommand("add", (sender, name) -> commandActivePlayer(sender, name, true), "Adds a player to the Plugin.");
+        addCommand("remove", (sender, name) -> commandActivePlayer(sender, name, false), "Removes a player from the Plugin.");
+        addCommand("totem one", (sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.One), "Totem of Undying: At least one player needs to hold it.");
+        addCommand("totem all", (sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.All), "Totem of Undying: All players need to hold it.");
+        addCommand("totem fraction", (sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.Fraction), "Totem of Undying: At least fraction * player-count need to hold it.");
+        addCommand("totem disabled", (sender, arg) -> commandSetTotemMode(sender, TotemManager.Mode.Disabled), "Totem of Undying: Disabled");
+        addCommand("totem setfraction", this::commandSetTotemFraction, "Totem of Undying: Set amount for mode: fraction.");
+        addCommand("totem getfraction", (sender, arg) -> commandGetTotemFraction(sender), "Totem of Undying: Get amount for mode: fraction.");
+        addCommand("totem get", (sender, arg) -> commandGetTotemMode(sender), "Totem of Undying: Get current mode.");
+        addCommand("log on", (sender, arg) -> commandSetLogging(sender, true), "Enables Logging.");
+        addCommand("log off", (sender, arg) -> commandSetLogging(sender, false), "Disables Logging.");
+        addCommand("log get", (sender, arg) -> commandGetLogging(sender), "Displays if Logging is enabled.");
+        addCommand("stats", (sender, arg) -> commandSendStats(sender), "Displays statistics about every player.");
+        addCommand("help", (sender, arg) -> commandGetHelp(sender), "Displays help message for command usage.");
+    }
+
+    private void addCommand(String cmdList, BiConsumer<CommandSender, String> call, String description){
+        commands.put(Arrays.asList(cmdList.split(" ")), Pair.pair(call, description));
     }
 
     final private List<String> mainSchema;
     final private List<String> hasSecondSchema;
     final private List<List<String>> secondSchema;
     {
+        //This is a mess, no idea how to expand it for 3 part commands
         Map<String, List<String>> mapping = new HashMap<>();
-        commands.keySet().forEach(parts -> {
+        commands.keySet().stream().sorted((l1, l2) -> l1.stream().reduce("", (w1, w2) -> w1 + w2).compareTo(l2.stream().reduce("", (w1, w2) -> w1 + w2))).forEach(parts -> {
             String part1 = parts.get(0);
             String part2 = "";
             if (parts.size() == 2){
@@ -103,8 +60,6 @@ public class Commands implements TabExecutor {
         secondSchema = new ArrayList<>(mapping.values());
     }
 
-
-    //This is a mess, no idea how to expand it for 3 part commands
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         List<String> list = new ArrayList<>();
